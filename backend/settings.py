@@ -140,3 +140,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOW_ALL_ORIGINS = True  # (Geliştirme için OK)
+
+CORS_ALLOWED_ORIGINS = [
+    "https://www.sinapirlanta.com",
+    "https://sinapirlanta.com"
+]
