@@ -8,11 +8,15 @@ from django.utils.timezone import now
 def track_event(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
-            print("Event:", data)
+            if request.body:
+                data = json.loads(request.body)
+            else:
+                return JsonResponse({"error": "No request body"}, status=400)
 
-            # Örnek: loglama yapabilirsin, DB’ye yazabilirsin
+            print("Event received:", data)
             return JsonResponse({"status": "ok"})
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
 
