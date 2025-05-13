@@ -31,7 +31,15 @@ SECRET_KEY = 'django-insecure-tmkple-p1pbf*-xj@b)8qr&)9tfb89d4p&3i=!x4j1#h96_bwv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['searchbox-project.onrender.com', 'localhost', '127.0.0.1', 'www.searchprojectdemo.com', 'searchprojectdemo.com']
+ALLOWED_HOSTS = [
+    'searchbox-project.onrender.com',
+    'localhost',
+    '127.0.0.1',
+    'www.searchprojectdemo.com',
+    'searchprojectdemo.com',
+    'www.sinapirlanta.com',  # <--- BUNU EKLE
+    'sinapirlanta.com'       # <--- VE BUNU DA
+]
 
 
 
@@ -142,6 +150,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True  # (Geliştirme için OK)
 
 CORS_ALLOWED_ORIGINS = [
-    "https://www.sinapirlanta.com",
-    "https://sinapirlanta.com"
+    "https://www.searchprojectdemo.com",
+    "https://searchprojectdemo.com",
+    "https://searchbox-project.onrender.com",
+    "https://www.sinapirlanta.com",  # <--- BUNU EKLE
+    "https://sinapirlanta.com",      # <--- BUNU DA EKLE
 ]
