@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from .services.ga4_api import fetch_search_terms
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 def search_terms_view(request):
     property_id = request.GET.get("property_id")
@@ -15,7 +16,7 @@ def search_terms_view(request):
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
-
+@csrf_exempt
 def track_event(request):
     if request.method == "POST":
         try:
