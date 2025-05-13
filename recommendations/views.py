@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from .services.ga4_fetcher import get_top_products
 
 def trending_products(request):
@@ -10,3 +10,6 @@ def trending_products(request):
         return JsonResponse({"products": products})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+def health_check(request):
+    return HttpResponse("OK", status=200)
