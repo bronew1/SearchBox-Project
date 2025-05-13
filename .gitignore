@@ -1,0 +1,27 @@
+# Bytecode
+*.py[cod]
+__pycache__/
+*.so
+
+# Django
+*.sqlite3
+*.log
+*.pot
+*.pyc
+
+# ENV
+env/
+venv/
+ENV/
+.VENV/
+
+# IDE
+.vscode/
+.idea/
+
+# Credentials
+credentials/
+
+# OS
+.DS_Store
+Thumbs.db
