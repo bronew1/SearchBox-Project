@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-tmkple-p1pbf*-xj@b)8qr&)9tfb89d4p&3i=!x4j1#h96_bwv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['searchbox-project.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['searchbox-project.onrender.com', 'localhost', '127.0.0.1', 'www.searchprojectdemo.com', 'searchprojectdemo.com']
 
 
 
