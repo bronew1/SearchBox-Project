@@ -156,3 +156,5 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.sinapirlanta.com",  # <--- BUNU EKLE
     "https://sinapirlanta.com",      # <--- BUNU DA EKLE
 ]
+
+CORS_ALLOW_CREDENTIALS = True
