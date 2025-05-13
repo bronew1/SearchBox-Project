@@ -8,16 +8,16 @@ from django.utils.timezone import now
 def track_event(request):
     if request.method == "POST":
         try:
-            if request.body:
-                data = json.loads(request.body)
-            else:
-                return JsonResponse({"error": "No request body"}, status=400)
+            data = json.loads(request.body)
+            event_type = data.get("event_type")
+            product_id = data.get("product_id")
+            user_id = data.get("user_id")
+            timestamp = data.get("timestamp")
 
-            print("Event received:", data)
-            return JsonResponse({"status": "ok"})
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+            # Burada loglama veya kaydetme yapılabilir
+            print("📦 Etkinlik alındı:", event_type, product_id, user_id, timestamp)
+
+            return JsonResponse({"status": "success"}, status=200)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-
-    return JsonResponse({"error": "Invalid method"}, status=405)
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    return JsonResponse({"status": "invalid method"}, status=405)
