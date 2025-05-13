@@ -11,5 +11,3 @@ def trending_products(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-def health_check(request):
-    return HttpResponse("OK", status=200)

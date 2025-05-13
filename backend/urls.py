@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 
-
+def health_check(request):
+    return HttpResponse("ok")
 
 urlpatterns = [
     path('', lambda request: HttpResponse("Welcome to SearchBox API")),  # geçici test
@@ -10,5 +11,5 @@ urlpatterns = [
     path('api/product/', include('products.urls')),
     path('api/', include('recommendations.urls')),
     path("api/ga4/", include("analytics.urls")),
-    path("healthz", include("recommendations.urls")),
+    path("healthz", health_check),
 ]
