@@ -32,4 +32,6 @@ def track_event(request):
             return JsonResponse({"status": "success"}, status=200)
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
-    return JsonResponse({"status": "invalid method"}, status=405)
+    return JsonResponse({"status": "invalid method"}, status=405) 
+
+#test macbook github
