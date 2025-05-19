@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'recommendations',
     'analytics',
+    'django_extensions',
 
 ]
 
