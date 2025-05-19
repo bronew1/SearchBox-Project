@@ -12,5 +12,5 @@ urlpatterns = [
     path('api/recommendations', include('recommendations.urls')),
     path("api/ga4/", include("analytics.urls")),
     path("healthz", health_check),
-    path("api/", include("analytics.urls")),
+    
 ]
