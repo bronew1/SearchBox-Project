@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'recommendations',
     'analytics',
-    'tracking',
+
 ]
 
 MIDDLEWARE = [
