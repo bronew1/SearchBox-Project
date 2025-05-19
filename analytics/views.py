@@ -27,13 +27,15 @@ def track_event(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            event_type = data.get("event_type")
-            product_id = data.get("product_id")
-            user_id = data.get("user_id")
-            timestamp_str = data.get("timestamp")
+
+            # GA4-style parametreler
+            event_type = data.get("event_type")            # Örn: view_item, add_to_cart, purchase
+            product_id = data.get("product_id")            # Ürünün external_id'si
+            user_id = data.get("user_id")                  # localStorage UUID'si
+            timestamp_str = data.get("timestamp")          # ISO format datetime string
             timestamp = parse_datetime(timestamp_str)
 
-            # Ürünü bul
+            # Ürün veritabanında var mı kontrolü
             product = Product.objects.filter(external_id=product_id).first()
             if not product:
                 return JsonResponse({"status": "error", "message": "Product not found"}, status=404)
@@ -51,7 +53,9 @@ def track_event(request):
 
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+    elif request.method == "GET":
+        return JsonResponse({"status": "ok", "message": "Tracking endpoint is live (but expects POST)"})
+
     return JsonResponse({"status": "invalid method"}, status=405)
-
-
 #test macbook github
