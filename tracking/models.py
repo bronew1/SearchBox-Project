@@ -1,18 +1,17 @@
-# your_tracking_app/models.py
 from django.db import models
 
-class CustomerEvent(models.Model):
-    event_type = models.CharField(max_length=50) # 'add_to_cart', 'view_item', 'purchase'
-    customer_id = models.CharField(max_length=255, blank=True, null=True) # Müşteri ID'si (varsa)
-    session_id = models.CharField(max_length=255, blank=True, null=True) # Oturum ID'si (varsa)
-    product_id = models.CharField(max_length=255, blank=True, null=True)
-    product_name = models.CharField(max_length=255, blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    quantity = models.IntegerField(default=1)
-    transaction_id = models.CharField(max_length=255, blank=True, null=True) # Satın alma için
-    revenue = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) # Satın alma için
+class UserEvent(models.Model):
+    EVENT_CHOICES = [
+        ('view_item', 'View Item'),
+        ('add_to_cart', 'Add to Cart'),
+        ('purchase', 'Purchase'),
+    ]
+
+    event_name = models.CharField(max_length=50, choices=EVENT_CHOICES)
+    product_id = models.CharField(max_length=100)
+    user_id = models.CharField(max_length=100)
+    event_value = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    raw_data = models.JSONField(blank=True, null=True) # Gelen tüm JSON verisini saklamak için
 
     def __str__(self):
-        return f"{self.event_type} - {self.product_name or self.transaction_id} at {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.timestamp} - {self.event_name} - {self.product_id} - {self.user_id}"
