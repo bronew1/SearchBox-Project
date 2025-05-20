@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'recommendations',
     'analytics',
     'tracking',
+    'rest_framework',
     
 ]
 

@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 
+from tracking.views import TrackingAPIView
+
 def health_check(request):
     return HttpResponse("ok")
 
@@ -12,5 +14,5 @@ urlpatterns = [
     path('api/recommendations', include('recommendations.urls')),
     path("api/ga4", include("analytics.urls")),
     path("healthz", health_check),
-    path("api/", include("tracking.urls")),
+    path('api/track-event/', TrackingAPIView.as_view(), name='track_event_api'),# GTM'den gelen veriyi alacak
 ]
