@@ -8,7 +8,7 @@ def health_check(request):
     return HttpResponse("ok")
 
 urlpatterns = [
-    path('', lambda request: HttpResponse("ASLIM SENİ ŞU AN SARSAM KEŞKE O TATLI SURATINI YİCEM")),  # geçici test
+    path('', lambda request: HttpResponse("Search")),  # geçici test
     path('admin/', admin.site.urls),
     path('api/product/', include('products.urls')),
     path('api/recommendations/', include('recommendations.urls')),
