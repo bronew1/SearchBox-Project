@@ -29,7 +29,7 @@ def get_recommendations(request):
     product_ids = list(events.values_list("product_id", flat=True).distinct()[:10])
 
     # Ürünleri ürün tablosundan getir
-    recommended_products = Product.objects.filter(sku__in=product_ids)
+    recommended_products = Product.objects.filter(external_id__in=product_ids)
 
     result = []
     for product in recommended_products:
@@ -37,7 +37,7 @@ def get_recommendations(request):
             "name": product.name,
             "price": product.price,
             "image": product.image_url,
-            "sku": product.sku,
+            "sku": product.external_id, 
         })
 
-    return JsonResponse({"recommendations": result})
+    return JsonResponse({"recommendationsz": result})

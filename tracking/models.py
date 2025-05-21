@@ -6,7 +6,7 @@ class UserEvent(models.Model):
         ('add_to_cart', 'Add to Cart'),
         ('purchase', 'Purchase'),
     ]
-    sku = models.CharField(max_length=100, unique=True, blank=True) 
+    
     event_name = models.CharField(max_length=50, choices=EVENT_CHOICES)
     product_id = models.CharField(max_length=100)
     user_id = models.CharField(max_length=100)
