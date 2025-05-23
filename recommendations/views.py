@@ -1,8 +1,8 @@
-from django.http import HttpResponse, JsonResponse
-from .services.ga4_fetcher import get_top_products
-from tracking.models import UserEvent
-from products.models import Product  # senin ürün modelin buysa
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from recommendations.services.ga4_fetcher import get_top_products
+from tracking.models import UserEvent
+from products.models import Product
 
 def trending_products(request):
     event_type = request.GET.get("type", "purchase")  # "purchase" veya "view_item"
@@ -22,13 +22,13 @@ def get_recommendations(request):
     if not user_id:
         return JsonResponse({"error": "user_id missing"}, status=400)
 
-    # Bu kullanıcı geçmişte neleri görüntülemiş?
+    # Kullanıcının geçmişte görüntülediği ürünleri çek
     events = UserEvent.objects.filter(user_id=user_id, event_name="view_item").order_by("-timestamp")
 
-    # En son baktığı ürünlerden en fazla 10 tanesini çek
+    # En fazla 10 benzersiz ürün id'si
     product_ids = list(events.values_list("product_id", flat=True).distinct()[:10])
 
-    # Ürünleri ürün tablosundan getir (external_id ile eşle)
+    # Product modelinde external_id ile eşleşenleri bul
     recommended_products = Product.objects.filter(external_id__in=product_ids)
 
     result = []
