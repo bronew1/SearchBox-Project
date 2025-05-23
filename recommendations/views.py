@@ -37,7 +37,7 @@ def get_recommendations(request):
             "name": product.name,
             "price": product.price,
             "image": product.image_url,
-            "sku": product.external_id, 
+            "external_id": product.external_id, 
         })
 
     return JsonResponse({"recommendationsz": result})
