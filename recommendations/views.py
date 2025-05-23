@@ -28,7 +28,7 @@ def get_recommendations(request):
     # En son baktığı ürünlerden en fazla 10 tanesini çek
     product_ids = list(events.values_list("product_id", flat=True).distinct()[:10])
 
-    # Ürünleri ürün tablosundan getir
+    # Ürünleri ürün tablosundan getir (external_id ile eşle)
     recommended_products = Product.objects.filter(external_id__in=product_ids)
 
     result = []
@@ -37,7 +37,7 @@ def get_recommendations(request):
             "name": product.name,
             "price": product.price,
             "image": product.image_url,
-            "external_id": product.external_id, 
+            "sku": product.external_id,
         })
 
     return JsonResponse({"recommendationsz": result})
