@@ -31,15 +31,16 @@ def upload_xml(request):
                     image_url = item.find("{http://base.google.com/ns/1.0}image_link").text
 
                     Product.objects.update_or_create(
-                        external_id=external_id,
-                        defaults={
-                            "title": title,
-                            "price": price,
-                            "image_url": image_url,
-                            "description": "",
-                            "category": ""
-                        }
-                    )
+    external_id=external_id,
+    defaults={
+        "name": title,  # düzeltildi
+        "price": price,
+        "image_url": image_url,
+        "description": "",
+        "category": ""
+    }
+)
+
                     count += 1
                 except Exception as e:
                     print("⚠️ Ürün hatası:", e)
