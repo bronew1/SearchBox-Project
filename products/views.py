@@ -18,14 +18,13 @@ def upload_xml(request):
             root = tree.getroot()
             items = root.find("channel").findall("item")
             success_count = 0
-            error_count = 0
-            errors = []
+            error_list = []
 
-            for item in items:
+            for i, item in enumerate(items):
                 try:
                     external_id = item.find("{http://base.google.com/ns/1.0}id").text.strip()
-                    name = item.find("title").text.strip()
-                    price_raw = item.find("{http://base.google.com/ns/1.0}price").text
+                    title = item.find("title").text.strip()
+                    price_raw = item.find("{http://base.google.com/ns/1.0}price").text.strip()
                     price = float(price_raw.split()[0])
                     image_url = item.find("{http://base.google.com/ns/1.0}image_link").text.strip()
                     sku_elem = item.find("{http://base.google.com/ns/1.0}sku")
@@ -34,10 +33,10 @@ def upload_xml(request):
                     Product.objects.update_or_create(
                         external_id=external_id,
                         defaults={
-                            "name": name,
-                            "sku": sku,
+                            "name": title[:255],
+                            "sku": sku[:100] if sku else None,
                             "price": price,
-                            "image_url": image_url,
+                            "image_url": image_url[:2000],  # URLField sınırı
                             "description": "",
                             "category": ""
                         }
@@ -45,20 +44,19 @@ def upload_xml(request):
                     success_count += 1
 
                 except Exception as e:
-                    print(f"⚠️ Ürün hatası (id={external_id}):", e)
-                    errors.append(f"id={external_id}: {e}")
-                    error_count += 1
-                    continue
+                    error_msg = f"[{i}] {external_id if 'external_id' in locals() else 'N/A'}: {str(e)}"
+                    print("❌", error_msg)
+                    error_list.append(error_msg)
 
             return JsonResponse({
                 "status": "success",
-                "message": f"{success_count} ürün başarıyla yüklendi, {error_count} ürün hatalı.",
-                "success": success_count,
-                "errors": errors[:5]  # ilk 5 hatayı dön
+                "message": f"{success_count} ürün başarıyla yüklendi.",
+                "errors": error_list[:10],  # sadece ilk 10 hatayı göster
+                "fail_count": len(error_list)
             })
 
         except Exception as e:
-            print("❌ Parse hatası:", e)
+            print("🌋 Genel XML parse hatası:", e)
             return JsonResponse({"status": "error", "error": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "error": "POST methodu bekleniyor"}, status=405)
