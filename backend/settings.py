@@ -102,6 +102,10 @@ DATABASES = {
     'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
 
+# Max 10MB dosya yüklemeye izin ver
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
