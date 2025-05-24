@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from .models import Product
+from products.models import Product  # doğru model importu
 
 @csrf_exempt
 def upload_xml(request):
@@ -25,22 +25,21 @@ def upload_xml(request):
             for item in items:
                 try:
                     external_id = item.find("{http://base.google.com/ns/1.0}id").text
-                    title = item.find("title").text
+                    name = item.find("title").text  # ⬅️ title -> name
                     price_raw = item.find("{http://base.google.com/ns/1.0}price").text
                     price = float(price_raw.split()[0])
                     image_url = item.find("{http://base.google.com/ns/1.0}image_link").text
 
                     Product.objects.update_or_create(
-    external_id=external_id,
-    defaults={
-        "name": title,  # <-- DÜZELTİLDİ
-        "price": price,
-        "image_url": image_url,
-        "description": "",
-        "category": ""
-    }
-)
-
+                        external_id=external_id,
+                        defaults={
+                            "name": name,  # ✅ title değil
+                            "price": price,
+                            "image_url": image_url,
+                            "description": "",
+                            "category": ""
+                        }
+                    )
                     count += 1
                 except Exception as e:
                     print("⚠️ Ürün hatası:", e)
