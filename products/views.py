@@ -33,7 +33,7 @@ def upload_xml(request):
                     Product.objects.update_or_create(
     external_id=external_id,
     defaults={
-        "name": title,  # düzeltildi
+        "name": title,  # <-- DÜZELTİLDİ
         "price": price,
         "image_url": image_url,
         "description": "",
