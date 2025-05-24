@@ -15,11 +15,11 @@ def track_event(request):
             user_id = data.get("user_id")  # IP veya localStorage'dan da olabilir
             #db ye kaydetmek için
             UserEvent.objects.create(
-                event_name=event_name,
-                product_id=product_id,
-                event_value=event_value,
-                user_id=user_id
-            )
+    event_name=event_name.strip(),
+    product_id=product_id.strip(),
+    event_value=event_value,
+    user_id=user_id.strip()
+)
 
             print(f"📦 Etkinlik: {event_name}, Ürün: {product_id}, Değer: {event_value}, Kullanıcı: {user_id}")
 
