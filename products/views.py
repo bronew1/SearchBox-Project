@@ -22,14 +22,13 @@ def upload_xml(request):
 
             for i, item in enumerate(items):
                 try:
-                    external_id = item.find("{http://base.google.com/ns/1.0}id").text.strip()
+                    ns = "{http://base.google.com/ns/1.0}"
+                    external_id = item.find(f"{ns}id").text.strip()
                     title = item.find("title").text.strip()
-                    price_raw = item.find("{http://base.google.com/ns/1.0}price").text.strip()
+                    price_raw = item.find(f"{ns}price").text.strip()
                     price = float(price_raw.split()[0])
-                    image_url = item.find("{http://base.google.com/ns/1.0}image_link").text.strip()
-
-                    # ✅ sku artık mpn'den geliyor
-                    sku_elem = item.find("{http://base.google.com/ns/1.0}mpn")
+                    image_url = item.find(f"{ns}image_link").text.strip()
+                    sku_elem = item.find(f"{ns}mpn")  # 🧠 DÜZENLENDİ
                     sku = sku_elem.text.strip() if sku_elem is not None else None
 
                     Product.objects.update_or_create(
