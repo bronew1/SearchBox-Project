@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'analytics',
     'tracking',
     'rest_framework',
-    'search',
+  
     
 ]
 
