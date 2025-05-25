@@ -39,3 +39,6 @@ def get_recommendations(request):
         })
 
     return JsonResponse({"recommendationsz": result})
+
+
+
