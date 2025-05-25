@@ -27,8 +27,10 @@ def upload_xml(request):
                     price_raw = item.find("{http://base.google.com/ns/1.0}price").text.strip()
                     price = float(price_raw.split()[0])
                     image_url = item.find("{http://base.google.com/ns/1.0}image_link").text.strip()
-                    sku_elem = item.find("{http://base.google.com/ns/1.0}sku")
-                    sku = sku_elem.text.strip() if sku_elem is not None else None
+                    
+                    # 🔁 DÜZELTME: <g:mpn> üzerinden sku al
+                    mpn_elem = item.find("{http://base.google.com/ns/1.0}mpn")
+                    sku = mpn_elem.text.strip() if mpn_elem is not None else None
 
                     Product.objects.update_or_create(
                         external_id=external_id,

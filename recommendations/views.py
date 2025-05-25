@@ -22,22 +22,20 @@ def get_recommendations(request):
     if not user_id:
         return JsonResponse({"error": "user_id missing"}, status=400)
 
-    # Kullanıcının geçmişte görüntülediği ürünleri çek
+    # Kullanıcının geçmişte görüntülediği ürünlerin SKU'larını al
     events = UserEvent.objects.filter(user_id=user_id, event_name="view_item").order_by("-timestamp")
+    product_skus = list(events.values_list("product_id", flat=True).distinct()[:10])
 
-    # En fazla 10 benzersiz ürün id'si
-    product_ids = list(events.values_list("product_id", flat=True).distinct()[:10])
-
-    # Product modelinde external_id ile eşleşenleri bul
-    recommended_products = Product.objects.filter(external_id__in=product_ids)
+    # SKU ile eşleşen ürünleri getir
+    recommended_products = Product.objects.filter(sku__in=product_skus)
 
     result = []
     for product in recommended_products:
         result.append({
             "name": product.name,
-            "price": product.price,
+            "price": float(product.price),  # Decimal'i JSON'a dönüştürmek için
             "image": product.image_url,
-            "sku": product.external_id,
+            "sku": product.sku,
         })
 
     return JsonResponse({"recommendationsz": result})
