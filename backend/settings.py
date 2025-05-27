@@ -180,6 +180,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = "8e19eb001@smtp-brevo.com"  # Brevo SMTP'de gözüken "Login"
-EMAIL_HOST_PASSWORD = "xsmtpsib-d5ad08396a1491a6fccdf2d639765ceb9c693f22d980170559ba11a26dd3f78a-s0th6F9TwA1pmJWE"       # Oluşturduğun SMTP key'i buraya yapıştır
-
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD") 
 DEFAULT_FROM_EMAIL = "no-reply@searchprojectdemo.com"  # Gönderen e-posta adresi
