@@ -81,7 +81,9 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -169,3 +171,15 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+
+# settings.py
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp-relay.brevo.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = "8e19eb001@smtp-brevo.com"  # Brevo SMTP'de gözüken "Login"
+EMAIL_HOST_PASSWORD = "xsmtpsib-d5ad08396a1491a6fccdf2d639765ceb9c693f22d980170559ba11a26dd3f78a-s0th6F9TwA1pmJWE"       # Oluşturduğun SMTP key'i buraya yapıştır
+
+DEFAULT_FROM_EMAIL = "no-reply@searchprojectdemo.com"  # Gönderen e-posta adresi
