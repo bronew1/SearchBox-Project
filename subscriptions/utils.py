@@ -1,13 +1,23 @@
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.conf import settings  # ✅ settings'ten mail ayarlarını çekmek için
+import logging
+
+logger = logging.getLogger(__name__)
 
 def send_welcome_email(email):
+    logger.info(f"📬 Mail fonksiyonu tetiklendi: {email}")
+
     subject = "Aramıza Hoş Geldin!"
-    message = render_to_string("email/welcome.html", {"email": email})
-    send_mail(
-        subject,
-        message,
-        "8e19eb003@smtp-brevo.com",  # From bu olmalı!
-        [email],
-        html_message=message
-    )
+    from_email = settings.DEFAULT_FROM_EMAIL  # ✅ Ayar dosyasından alınır
+    to = [email]
+    text_content = "Merhaba, aramıza hoş geldiniz!"
+    html_content = render_to_string("email/welcome.html", {"email": email})
+
+    logger.info("✅ HTML içerik oluşturuldu")
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+    logger.info("✅ Mail gönderildi")

@@ -183,3 +183,16 @@ EMAIL_HOST_USER = "8e19eb003@smtp-brevo.com"  # Gerçek SMTP login bu!
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # Şifre doğru, key bu login'e ait
 DEFAULT_FROM_EMAIL = "8e19eb003@smtp-brevo.com"  # Şimdilik login ile aynı tutulmalı!
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
