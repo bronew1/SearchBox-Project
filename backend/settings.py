@@ -179,6 +179,7 @@ EMAIL_HOST = "smtp-relay.brevo.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = "8e19eb001@smtp-brevo.com"  # Brevo SMTP'de gözüken "Login"
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD") 
-DEFAULT_FROM_EMAIL = "no-reply@searchprojectdemo.com"  # Gönderen e-posta adresi
+EMAIL_HOST_USER = "8e19eb003@smtp-brevo.com"  # Gerçek SMTP login bu!
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # Şifre doğru, key bu login'e ait
+DEFAULT_FROM_EMAIL = "8e19eb003@smtp-brevo.com"  # Şimdilik login ile aynı tutulmalı!
+

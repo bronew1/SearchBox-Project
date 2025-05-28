@@ -7,7 +7,7 @@ def send_welcome_email(email):
     send_mail(
         subject,
         message,
-        "no-reply@searchprojectdemo.com",  # from
-        [email],                            # to
+        "8e19eb003@smtp-brevo.com",  # From bu olmalı!
+        [email],
         html_message=message
     )
