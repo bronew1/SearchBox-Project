@@ -12,11 +12,14 @@ class Subscriber(models.Model):
 
 from django.db import models
 
+from django.db import models
+
 class EmailTemplateWelcome(models.Model):
     name = models.CharField(max_length=100, unique=True)
     subject = models.CharField(max_length=200)
-    html_content = models.TextField()
+    html_content = models.TextField(blank=True, null=True)  # Artık zorunlu değil
     image = models.ImageField(upload_to='email_images/', blank=True, null=True)
 
     def __str__(self):
         return self.name
+
