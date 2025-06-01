@@ -2,7 +2,7 @@
 
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from .models import EmailTemplate
+from .models import EmailTemplateWelcome
 import logging
 
 logger = logging.getLogger('subscriptions')
@@ -11,8 +11,8 @@ def send_welcome_email(email):
     logger.info(f"📬 Mail fonksiyonu tetiklendi: {email}")
 
     try:
-        template = EmailTemplate.objects.get(name="welcome_email")
-    except EmailTemplate.DoesNotExist:
+        template = EmailTemplateWelcome.objects.get(name="welcome_email")
+    except EmailTemplateWelcome.DoesNotExist:
         logger.error("❌ 'welcome_email' isimli EmailTemplate bulunamadı.")
         return
 
