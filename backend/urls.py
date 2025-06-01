@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.urls import path, include
 from tracking.views import track_event
 from subscriptions.views import subscribe 
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 def health_check(request):
@@ -19,4 +21,4 @@ urlpatterns = [
     path('api/subscribe/', subscribe),
     
     
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,6 +1,8 @@
+# subscriptions/utils.py
+
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.conf import settings
+from .models import EmailTemplate
 import logging
 
 logger = logging.getLogger('subscriptions')
@@ -8,19 +10,26 @@ logger = logging.getLogger('subscriptions')
 def send_welcome_email(email):
     logger.info(f"📬 Mail fonksiyonu tetiklendi: {email}")
 
-    subject = "Aramıza Hoş Geldin!"
-    text_content = "Merhaba, aramıza hoş geldiniz!"
-    html_content = render_to_string("email/welcome.html", {"email": email})
+    try:
+        template = EmailTemplate.objects.get(name="welcome_email")
+    except EmailTemplate.DoesNotExist:
+        logger.error("❌ 'welcome_email' isimli EmailTemplate bulunamadı.")
+        return
 
-    logger.info("✅ HTML içerik oluşturuldu")
+    html_content = template.html_content
+    text_content = "Merhaba, aramıza hoş geldiniz!"  # istersen admin'den de alınabilir
+    subject = template.subject
 
     msg = EmailMultiAlternatives(
-        subject=subject,
-        body=text_content,
-        from_email=settings.DEFAULT_FROM_EMAIL,  # ✔️ Ayarı settings.py'den al
-        to=[email]
+        subject,
+        text_content,
+        "Sina Pırlanta <no-reply@sinapirlanta.email>",
+        [email]
     )
     msg.attach_alternative(html_content, "text/html")
-    msg.send()
 
+    if template.image:
+        msg.attach_file(template.image.path)
+
+    msg.send()
     logger.info("✅ Mail gönderildi")
