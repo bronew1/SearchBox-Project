@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class UserEvent(models.Model):
     EVENT_CHOICES = [
@@ -15,3 +16,11 @@ class UserEvent(models.Model):
 
     def __str__(self):
         return f"{self.timestamp} - {self.event_name} - {self.product_id} - {self.user_id}"
+
+
+class CartAbandonment(models.Model):
+    user_id = models.CharField(max_length=255)
+    product_id = models.CharField(max_length=255)
+    added_at = models.DateTimeField(default=timezone.now)
+    is_purchased = models.BooleanField(default=False)
+    is_email_sent = models.BooleanField(default=False)

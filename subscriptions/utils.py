@@ -37,3 +37,26 @@ def send_welcome_email(email):
     msg.send()
 
     logger.info("✅ Mail gönderildi")
+
+def send_cart_abandonment_email(user_id, product_id):
+    try:
+        # user_id e-posta ise direkt kullan
+        email = user_id if "@" in user_id else None
+        if not email:
+            return False
+
+        subject = "Sepetinizde Ürün Kaldı!"
+        text_content = "Sepetinizde ürün kaldı, alışverişinize devam etmek ister misiniz?"
+        html_content = render_to_string("email/cart_reminder.html", {
+            "product_id": product_id,
+            "user_id": user_id,
+        })
+
+        msg = EmailMultiAlternatives(subject, text_content, "Sina Pırlanta <no-reply@sinapirlanta.email>", [email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+        return True
+    except Exception as e:
+        logger.error(f"Sepet maili gönderilemedi: {str(e)}")
+        return False

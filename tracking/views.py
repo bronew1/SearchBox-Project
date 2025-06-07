@@ -2,8 +2,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 
-from tracking.models import UserEvent
-from recommendations.models import CartAbandonment  # 🔥 bu modeli oluşturduysan
+from tracking.models import CartAbandonment, UserEvent
 
 @csrf_exempt
 def track_event(request):
@@ -15,7 +14,7 @@ def track_event(request):
             event_value = data.get("event_value")
             user_id = data.get("user_id")
 
-            # Veritabanına UserEvent olarak kaydet
+            # UserEvent olarak kaydet
             UserEvent.objects.create(
                 event_name=event_name.strip(),
                 product_id=product_id.strip() if product_id else None,
@@ -23,20 +22,20 @@ def track_event(request):
                 user_id=user_id.strip()
             )
 
-            # 🎯 Sepete ekleme takibi
+            # Sepete ekleme eventi
             if event_name == "add_to_cart" and product_id and user_id:
                 CartAbandonment.objects.create(
                     user_id=user_id.strip(),
                     product_id=product_id.strip()
                 )
 
-            # ✅ Satın alma gerçekleştiyse, önceki sepete eklenenleri purchased=True yap
+            # Satın alma eventi
             if event_name == "purchase" and product_id and user_id:
                 CartAbandonment.objects.filter(
                     user_id=user_id.strip(),
                     product_id=product_id.strip(),
-                    purchased=False
-                ).update(purchased=True)
+                    is_purchased=False
+                ).update(is_purchased=True)
 
             print(f"📦 Etkinlik: {event_name}, Ürün: {product_id}, Değer: {event_value}, Kullanıcı: {user_id}")
             return JsonResponse({"status": "ok"})
