@@ -1,6 +1,6 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from .models import EmailTemplateWelcome
+from .models import EmailTemplateCartReminder, EmailTemplateWelcome
 import logging
 
 logger = logging.getLogger('subscriptions')
@@ -56,6 +56,29 @@ def send_cart_abandonment_email(user_id, product_id):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+        return True
+    except Exception as e:
+        logger.error(f"Sepet maili gönderilemedi: {str(e)}")
+        return False
+
+
+def send_cart_abandonment_email(user_id, product_id):
+    try:
+        email = user_id if "@" in user_id else None
+        if not email:
+            return False
+
+        template = EmailTemplateCartReminder.objects.get(name="cart_reminder")
+        subject = template.subject or "Sepetinizde Ürün Kaldı!"
+        html_content = template.html_content or ""
+        text_content = "Sepetinizde ürün kaldı, alışverişinize devam etmek ister misiniz?"
+
+        if not html_content and template.image:
+            html_content = f'<div style="text-align:center;"><img src="{template.image.url}" alt="Sepet Hatırlatma Görseli"></div>'
+
+        msg = EmailMultiAlternatives(subject, text_content, "Sina Pırlanta <no-reply@sinapirlanta.email>", [email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
         return True
     except Exception as e:
         logger.error(f"Sepet maili gönderilemedi: {str(e)}")
