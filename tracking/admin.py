@@ -11,5 +11,5 @@ class UserEventAdmin(admin.ModelAdmin):
 
 @admin.register(CartAbandonment)
 class CartAbandonmentAdmin(admin.ModelAdmin):
-    list_display = ['user_id', 'product_id', 'added_at', 'is_purchased', 'email_sent']
-    list_filter = ['email_sent']
+    list_display = ["user_id", "product_id", "added_at", "is_purchased", "is_email_sent"]  # ✅ DOĞRU HALİ
+    list_filter = ["is_email_sent", "is_purchased"]  # ✅ DOĞRU HALİ
