@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
-
+from datetime import timedelta, timezone
 from tracking.models import CartAbandonment, UserEvent
 
 @csrf_exempt
@@ -44,3 +44,15 @@ def track_event(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     return JsonResponse({"error": "Invalid request"}, status=405)
+
+
+def cart_count(request, product_id):
+    last_hour = timezone.now() - timedelta(hours=1)
+
+    count = UserEvent.objects.filter(
+        event_name="add_to_cart",
+        product_id=product_id,
+        timestamp__gte=last_hour
+    ).values("user_id").distinct().count()
+
+    return JsonResponse({"count": count})
