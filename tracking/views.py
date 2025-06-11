@@ -1,7 +1,8 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
-from datetime import timedelta, timezone
+from django.utils import timezone
+from datetime import timedelta
 from tracking.models import CartAbandonment, UserEvent
 
 @csrf_exempt
