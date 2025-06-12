@@ -48,7 +48,8 @@ def track_event(request):
 
 
 def cart_count(request, product_id):
-    last_3_hours = timezone.now() - timedelta(hours=1)
+    
+    last_3_hours = timezone.now() - timedelta(hours=3)
 
     count = UserEvent.objects.filter(
         event_name="add_to_cart",
