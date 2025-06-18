@@ -17,7 +17,7 @@ export default function BestSellersWidget() {
         className="fixed bottom-4 left-4 w-[85px] h-[85px] rounded-full bg-[#ebbecb] shadow-lg flex items-center justify-center cursor-pointer z-50"
         onClick={() => setVisible(!visible)}
       >
-        🛍️
+        Fırsatlar💎
       </div>
 
       {visible && (
