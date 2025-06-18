@@ -31,27 +31,31 @@
         z-index: 9999;
         font-size: 24px;
       }
+
       #best-seller-popup {
         position: fixed;
         bottom: 100px;
         left: 20px;
-        width: 620px;
-        height: 480px;
+        width: 92vw;
+        max-width: 580px;
+        height: 460px;
         background: white;
         border-radius: 16px;
         padding: 16px;
         border: 1px solid #ebbecb;
-        box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        box-shadow: 0 2px 20px rgba(0,0,0,0.2);
         overflow-y: auto;
         z-index: 9999;
         display: none;
       }
+
       #best-seller-popup h2 {
         text-align: center;
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 12px;
       }
+
       .product-best-wrapper {
         width: 48%;
         float: left;
@@ -62,15 +66,18 @@
         border-radius: 6px;
         background: #fff;
       }
+
       .product-img {
         position: relative;
       }
+
       .base-image, .hover-image {
         width: 100%;
         height: auto;
         display: block;
         border-radius: 6px;
       }
+
       .hover-image {
         position: absolute;
         top: 0;
@@ -78,9 +85,11 @@
         opacity: 0;
         transition: opacity 0.3s;
       }
+
       .product-img:hover .hover-image {
         opacity: 1;
       }
+
       .hover-img-detail {
         position: absolute;
         bottom: 10px;
@@ -88,15 +97,18 @@
         color: white;
         font-size: 12px;
       }
+
       .product-code {
         background: rgba(0,0,0,0.6);
         padding: 2px 6px;
         border-radius: 4px;
       }
+
       .product-detail {
         text-align: center;
         margin-top: 8px;
       }
+
       .product-title {
         display: block;
         color: #000;
@@ -104,10 +116,30 @@
         text-decoration: none;
         margin-bottom: 4px;
       }
+
       .price-wrapper {
         font-size: 15px;
         font-weight: bold;
         color: #000;
+      }
+
+      @media (max-width: 480px) {
+        #best-seller-popup {
+          width: 90vw;
+          height: 80vh;
+          left: 5vw;
+          bottom: 90px;
+          padding: 12px;
+        }
+
+        .product-best-wrapper {
+          width: 100%;
+          margin-bottom: 12px;
+        }
+
+        .product-detail .product-title {
+          font-size: 14px;
+        }
       }
     `;
 
