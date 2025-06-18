@@ -144,11 +144,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")  # ✅ Kendi kaynak klasörün
+]
 
-# Prod ortamı için genelde bu da gerekir:
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ✅ collectstatic buraya kopyalar
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
@@ -207,4 +210,4 @@ LOGGING = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "staticfiles")]
+
