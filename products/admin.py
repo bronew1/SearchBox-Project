@@ -1,8 +1,11 @@
 from django.contrib import admin
 
-from products.models import WidgetProductSelection
+from products.models import WidgetProduct
+
+
 
 # Register your models here.
-@admin.register(WidgetProductSelection)
-class WidgetProductSelectionAdmin(admin.ModelAdmin):
-    list_display = ["product", "order"]
+@admin.register(WidgetProduct)
+class WidgetProductAdmin(admin.ModelAdmin):
+    list_display = ["name", "price", "sku", "order"]
+    list_editable = ["order"]

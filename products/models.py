@@ -16,12 +16,17 @@ class Product(models.Model):
 
 
 
-class WidgetProductSelection(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+class WidgetProduct(models.Model):
+    name = models.CharField(max_length=255)
+    image_url = models.URLField()
+    hover_image_url = models.URLField(blank=True, null=True)
+    price = models.CharField(max_length=50)
+    product_url = models.URLField()
+    sku = models.CharField(max_length=100, blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ["order"]
 
     def __str__(self):
-        return f"{self.order}. {self.product.name}"
+        return f"{self.order + 1}. {self.name}"
