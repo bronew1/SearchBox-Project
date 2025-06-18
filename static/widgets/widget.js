@@ -19,8 +19,8 @@
         position: fixed;
         bottom: 20px;
         left: 20px;
-        width: 70px;
-        height: 70px;
+        width: 60px;
+        height: 60px;
         background-color: #ebbecb;
         border-radius: 50%;
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -29,31 +29,31 @@
         align-items: center;
         cursor: pointer;
         z-index: 9999;
-        font-size: 24px;
+        font-size: 20px;
       }
 
       #best-seller-popup {
         position: fixed;
         bottom: 100px;
         left: 20px;
-        width: 92vw;
-        max-width: 420px;
+        width: 88vw;
+        max-width: 340px;
         background: white;
         border-radius: 16px;
-        padding: 16px 12px;
+        padding: 12px 10px;
         border: 1px solid #ebbecb;
         box-shadow: 0 2px 16px rgba(0,0,0,0.2);
         overflow-y: auto;
-        max-height: 80vh;
+        max-height: 72vh;
         z-index: 9999;
         display: none;
       }
 
       #best-seller-popup h2 {
         text-align: center;
-        font-size: 18px;
+        font-size: 15px;
         font-weight: bold;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
 
       .product-best-wrapper {
@@ -61,9 +61,9 @@
         float: left;
         box-sizing: border-box;
         margin: 1%;
+        padding: 4px;
         border: 1px solid #ebbecb;
-        padding: 6px;
-        border-radius: 6px;
+        border-radius: 5px;
         background: #fff;
       }
 
@@ -75,7 +75,7 @@
         width: 100%;
         height: auto;
         display: block;
-        border-radius: 6px;
+        border-radius: 4px;
       }
 
       .hover-image {
@@ -100,42 +100,42 @@
 
       .product-code {
         background: rgba(0,0,0,0.6);
-        padding: 2px 5px;
-        border-radius: 4px;
+        padding: 1px 4px;
+        border-radius: 3px;
       }
 
       .product-detail {
         text-align: center;
-        margin-top: 6px;
+        margin-top: 4px;
       }
 
       .product-title {
         display: block;
         color: #000;
-        font-size: 12px;
+        font-size: 11px;
         text-decoration: none;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
         line-height: 1.2;
       }
 
       .price-wrapper {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: bold;
         color: #000;
       }
 
       @media (min-width: 768px) {
         #best-seller-popup {
-          max-width: 500px;
+          max-width: 420px;
           max-height: 500px;
         }
 
         .product-title {
-          font-size: 13px;
+          font-size: 12px;
         }
 
         .price-wrapper {
-          font-size: 14px;
+          font-size: 13px;
         }
       }
     `;
