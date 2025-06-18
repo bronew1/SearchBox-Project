@@ -12,3 +12,16 @@ class Product(models.Model):
     
     def __str__(self):
         return f"{self.sku or self.external_id} - {self.name}"
+
+
+
+
+class WidgetProductSelection(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.order}. {self.product.name}"

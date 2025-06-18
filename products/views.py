@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from products.models import Product
+from products.models import Product, WidgetProductSelection
 
 @csrf_exempt
 def upload_xml(request):
@@ -61,3 +61,15 @@ def upload_xml(request):
             return JsonResponse({"status": "error", "error": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "error": "POST methodu bekleniyor"}, status=405)
+
+
+def widget_products(request):
+    selected = WidgetProductSelection.objects.select_related("product").all()
+    data = [{
+        "name": s.product.name,
+        "image_url": s.product.image_url,
+        "price": str(s.product.price),
+        "sku": s.product.sku,
+        "url": f"https://www.sinapirlanta.com/urun/{s.product.sku}"  # Gerçek URL yapınıza göre ayarla
+    } for s in selected]
+    return JsonResponse({"products": data})
