@@ -105,7 +105,7 @@
 
     const toggle = document.createElement("div");
     toggle.id = "best-seller-toggle";
-    toggle.innerText = "🛍️";
+    toggle.innerText = "Günün Fırsatı 💎";
     toggle.onclick = () => {
       state.visible = !state.visible;
       document.getElementById("best-seller-popup").style.display = state.visible ? "block" : "none";
