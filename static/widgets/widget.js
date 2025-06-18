@@ -37,14 +37,14 @@
         bottom: 100px;
         left: 20px;
         width: 92vw;
-        max-width: 580px;
-        height: 460px;
+        max-width: 420px;
         background: white;
         border-radius: 16px;
-        padding: 16px;
+        padding: 16px 12px;
         border: 1px solid #ebbecb;
-        box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 16px rgba(0,0,0,0.2);
         overflow-y: auto;
+        max-height: 80vh;
         z-index: 9999;
         display: none;
       }
@@ -62,7 +62,7 @@
         box-sizing: border-box;
         margin: 1%;
         border: 1px solid #ebbecb;
-        padding: 8px;
+        padding: 6px;
         border-radius: 6px;
         background: #fff;
       }
@@ -92,52 +92,49 @@
 
       .hover-img-detail {
         position: absolute;
-        bottom: 10px;
-        left: 10px;
+        bottom: 6px;
+        left: 6px;
         color: white;
-        font-size: 12px;
+        font-size: 10px;
       }
 
       .product-code {
         background: rgba(0,0,0,0.6);
-        padding: 2px 6px;
+        padding: 2px 5px;
         border-radius: 4px;
       }
 
       .product-detail {
         text-align: center;
-        margin-top: 8px;
+        margin-top: 6px;
       }
 
       .product-title {
         display: block;
         color: #000;
-        font-size: 13px;
+        font-size: 12px;
         text-decoration: none;
         margin-bottom: 4px;
+        line-height: 1.2;
       }
 
       .price-wrapper {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: bold;
         color: #000;
       }
 
-      @media (max-width: 480px) {
+      @media (min-width: 768px) {
         #best-seller-popup {
-          width: 90vw;
-          height: 80vh;
-          left: 5vw;
-          bottom: 90px;
-          padding: 12px;
+          max-width: 500px;
+          max-height: 500px;
         }
 
-        .product-best-wrapper {
-          width: 100%;
-          margin-bottom: 12px;
+        .product-title {
+          font-size: 13px;
         }
 
-        .product-detail .product-title {
+        .price-wrapper {
           font-size: 14px;
         }
       }
