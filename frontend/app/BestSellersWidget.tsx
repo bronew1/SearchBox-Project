@@ -6,13 +6,14 @@ export default function BestSellersWidget() {
   const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("https://searchprojectdemo.com/api/widget-products/")
+    fetch("https://searchprojectdemo.com/api/product/widget-products/")
       .then((res) => res.json())
       .then((data) => setProducts(data.products));
   }, []);
 
   return (
     <>
+      {/* Yuvarlak Buton */}
       <div
         className="fixed bottom-4 left-4 w-[85px] h-[85px] rounded-full bg-[#ebbecb] shadow-lg flex items-center justify-center cursor-pointer z-50"
         onClick={() => setVisible(!visible)}
@@ -20,20 +21,31 @@ export default function BestSellersWidget() {
         🛍️
       </div>
 
+      {/* Açılır Panel */}
       {visible && (
-        <div className="fixed bottom-[100px] left-4 w-[764px] h-[544px] bg-white border rounded-2xl shadow-2xl p-6 overflow-y-auto z-50">
+        <div className="fixed bottom-[100px] left-4 w-[764px] h-[544px] bg-white border rounded-2xl shadow-2xl p-4 overflow-y-auto z-50">
           <div className="grid grid-cols-2 gap-4">
             {products.map((p, i) => (
-              <div key={i} className="product-best-wrapper" data-product-id={p.sku}>
+              <div key={i} className="product-best-wrapper">
                 <div className="product-img">
                   <a href={p.url}>
-                    <img className="base-image" src={p.image_url} alt={p.name} width={358} height={358} />
+                    <img
+                      className="base-image"
+                      src={p.image_url}
+                      alt={p.name}
+                      width={358}
+                      height={358}
+                    />
                   </a>
-                  {p.hover_image_url && (
-                    <a href={p.url}>
-                      <img className="hover-image" src={p.hover_image_url} alt={p.name} width={358} height={358} />
-                    </a>
-                  )}
+                  <a href={p.url}>
+                    <img
+                      className="hover-image"
+                      src={p.hover_image_url}
+                      alt={p.name}
+                      width={358}
+                      height={358}
+                    />
+                  </a>
                   <div className="hover-img-detail">
                     <div className="product-code">{p.sku}</div>
                     <div>
@@ -41,10 +53,6 @@ export default function BestSellersWidget() {
                       <a href={p.url} className="product-sepet">S</a>
                     </div>
                   </div>
-                </div>
-
-                <div className="product-ticket-wrapper">
-                  {/* buraya badge’leri eklersen gelecek */}
                 </div>
 
                 <div className="product-detail">
