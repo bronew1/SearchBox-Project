@@ -40,7 +40,7 @@
         background: white;
         border-radius: 12px;
         padding: 10px;
-        border: 1px solid #ebbecb;
+        border: 3px solid #ebbecb; /* 🔴 Daha kalın pembe çerçeve */
         box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         overflow-y: auto;
         max-height: 70vh;
@@ -63,7 +63,7 @@
       }
 
       .bestseller-product-wrapper {
-        width: 140px;
+        width: 47%;
         border: 1px solid #ebbecb;
         padding: 6px;
         border-radius: 6px;
