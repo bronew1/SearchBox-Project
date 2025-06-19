@@ -19,8 +19,8 @@
         position: fixed;
         bottom: 20px;
         left: 20px;
-        width: 65px;
-        height: 65px;
+        width: 60px;
+        height: 60px;
         background-color: #ebbecb;
         border-radius: 50%;
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -29,19 +29,18 @@
         align-items: center;
         cursor: pointer;
         z-index: 9999;
-        font-size: 24px;
+        font-size: 20px;
       }
 
       #bestseller-popup {
         position: fixed;
         bottom: 100px;
         left: 20px;
-        width: 92vw;
-        max-width: 520px;
-        height: auto;
+        width: 90vw;
+        max-width: 460px;
         background: white;
         border-radius: 16px;
-        padding: 16px;
+        padding: 12px;
         border: 1px solid #ebbecb;
         box-shadow: 0 2px 20px rgba(0,0,0,0.2);
         overflow-y: auto;
@@ -51,9 +50,9 @@
 
       #bestseller-popup h2 {
         text-align: center;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: bold;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
 
       .bestseller-product-wrapper {
@@ -90,20 +89,6 @@
         opacity: 1;
       }
 
-      .bestseller-hover-img-detail {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        color: white;
-        font-size: 12px;
-      }
-
-      .bestseller-product-code {
-        background: rgba(0,0,0,0.6);
-        padding: 2px 6px;
-        border-radius: 4px;
-      }
-
       .bestseller-product-detail {
         text-align: center;
         margin-top: 8px;
@@ -123,12 +108,25 @@
         color: #000;
       }
 
+      .bestseller-discover-button {
+        display: inline-block;
+        margin-top: 6px;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        background-color: #ebbecb;
+        color: #000;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
       @media (max-width: 480px) {
         #bestseller-popup {
           width: 90vw;
           left: 5vw;
           bottom: 90px;
-          padding: 12px;
         }
 
         .bestseller-product-wrapper {
@@ -160,13 +158,11 @@
               <img class="bestseller-base-image" src="${p.image_url}" alt="${p.name}" />
               <img class="bestseller-hover-image" src="${p.hover_image_url || p.image_url}" alt="${p.name}" />
             </a>
-            <div class="bestseller-hover-img-detail">
-              <div class="bestseller-product-code">${p.sku}</div>
-            </div>
           </div>
           <div class="bestseller-product-detail">
             <a href="${p.url}" class="bestseller-product-title">${p.name}</a>
             <p class="bestseller-price-wrapper">${parseFloat(p.price).toLocaleString("tr-TR")} TL</p>
+            <a href="${p.url}" class="bestseller-discover-button">Keşfet</a>
           </div>
         </div>
       `).join("")}
