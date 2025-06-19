@@ -152,7 +152,7 @@
 
     const toggle = document.createElement("div");
     toggle.id = "bestseller-toggle";
-    toggle.innerText = "🛍️";
+    toggle.innerText = "💎";
     toggle.onclick = () => {
       const popup = document.getElementById("bestseller-popup");
       state.visible = !state.visible;
