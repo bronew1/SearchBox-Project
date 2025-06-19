@@ -35,12 +35,14 @@
       #bestseller-popup {
         position: fixed;
         bottom: 100px;
-        left: 20px;
-        width: 90vw;
-        max-width: 460px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95vw;
+        max-width: 380px;
+        max-height: 80vh;
         background: white;
         border-radius: 16px;
-        padding: 12px;
+        padding: 10px;
         border: 1px solid #ebbecb;
         box-shadow: 0 2px 20px rgba(0,0,0,0.2);
         overflow-y: auto;
@@ -52,18 +54,18 @@
         text-align: center;
         font-size: 15px;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
 
       .bestseller-product-wrapper {
         width: 48%;
         float: left;
-        box-sizing: border-box;
         margin: 1%;
         border: 1px solid #ebbecb;
-        padding: 8px;
+        padding: 6px;
         border-radius: 6px;
         background: #fff;
+        box-sizing: border-box;
       }
 
       .bestseller-product-img {
@@ -72,7 +74,6 @@
 
       .bestseller-base-image, .bestseller-hover-image {
         width: 100%;
-        height: auto;
         display: block;
         border-radius: 6px;
       }
@@ -91,28 +92,29 @@
 
       .bestseller-product-detail {
         text-align: center;
-        margin-top: 8px;
+        margin-top: 6px;
       }
 
       .bestseller-product-title {
         display: block;
         color: #000;
-        font-size: 13px;
+        font-size: 12px;
         text-decoration: none;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
+        line-height: 1.2;
       }
 
       .bestseller-price-wrapper {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: bold;
         color: #000;
       }
 
       .bestseller-discover-button {
         display: inline-block;
-        margin-top: 6px;
-        padding: 6px 12px;
-        font-size: 13px;
+        margin-top: 4px;
+        padding: 4px 10px;
+        font-size: 12px;
         font-weight: 500;
         background-color: #ebbecb;
         color: #000;
@@ -126,12 +128,14 @@
         #bestseller-popup {
           width: 90vw;
           left: 5vw;
+          transform: none;
           bottom: 90px;
         }
-
-        .bestseller-product-wrapper {
-          width: 48%;
-          margin: 1%;
+        .bestseller-product-title {
+          font-size: 11px;
+        }
+        .bestseller-price-wrapper {
+          font-size: 12px;
         }
       }
     `;
