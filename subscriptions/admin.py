@@ -15,4 +15,6 @@ class EmailTemplateCartReminderAdmin(admin.ModelAdmin):
     list_display = ("name", "subject")
 
 
-admin.site.register(EmailTemplateRecommendation)
+@admin.register(EmailTemplateRecommendation)
+class EmailTemplateRecommendationAdmin(admin.ModelAdmin):
+    list_display = ("name", "subject")
