@@ -52,12 +52,17 @@ EMBEDDING_FILE_PATH = "recommendations/embeddings.pkl"
 
 def similar_products(request, sku):
     try:
+        # 📦 Embedding dosyasını oku
         with open(EMBEDDING_FILE_PATH, "rb") as f:
             product_embeddings = pickle.load(f)
 
+        # 🔍 Benzer ürünlerin sku'larını al
         similar_skus = get_similar_products(sku, product_embeddings)
 
+        # 🛍️ Ürün detaylarını veritabanından al
         products = Product.objects.filter(sku__in=similar_skus)
+
+        # ✅ JSON response için yapı hazırla
         data = []
         for p in products:
             data.append({
@@ -65,7 +70,7 @@ def similar_products(request, sku):
                 "name": p.name,
                 "price": float(p.price),
                 "image": p.image_url,
-                "url": p.url,
+                "url": f"https://www.sinapirlanta.com/urun/{p.sku}",
             })
 
         return JsonResponse({"products": data})
