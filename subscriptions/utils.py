@@ -5,6 +5,8 @@ import logging
 from django.conf import settings
 from subscriptions.models import EmailTemplateRecommendation
 import requests
+from recommendations.views import similar_products
+from products.models import Product
 
 logger = logging.getLogger('subscriptions')
 
@@ -89,3 +91,38 @@ def send_cart_abandonment_email(user_id, product_id):
     
 
 
+
+def send_recommendation_email(to_email, sku="SP21930"):
+    try:
+        # Admin panelinden alınan şablon
+        template = EmailTemplateRecommendation.objects.get(name="recommendation_v1")
+
+        # Önerilen ürünleri al
+        from django.test import RequestFactory
+        request = RequestFactory().get(f"/api/recommendations/similar/{sku}/")
+        response = similar_products(request, sku=sku)
+        product_data = response.json()["products"]
+
+        # HTML içinde dinamik ürünleri üret
+        recommended_html = ""
+        for p in product_data:
+            recommended_html += f"""
+                <div style="display:inline-block; text-align:center; margin:10px;">
+                    <img src="{p['image']}" alt="{p['name']}" width="140"><br>
+                    <strong>{p['name']}</strong><br>
+                    <span>{p['price']} TL</span><br>
+                    <a href="{p['url']}" style="display:inline-block;margin-top:5px;padding:5px 10px;background:#ebbecb;color:#000;text-decoration:none;border-radius:4px;">İncele</a>
+                </div>
+            """
+
+        html_content = template.html_content.replace("{{ recommended_products }}", recommended_html)
+
+        msg = EmailMultiAlternatives(template.subject, "", to=[to_email])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+        return True
+
+    except Exception as e:
+        print("❌ Email gönderim hatası:", e)
+        return False
