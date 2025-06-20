@@ -1,8 +1,11 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from recommendations.services.ga4_fetcher import get_top_products
+from recommendations.utils import get_similar_products
 from tracking.models import UserEvent
 from products.models import Product
+import pickle
+import os
 
 def trending_products(request):
     event_type = request.GET.get("type", "purchase")  # "purchase" veya "view_item"
@@ -42,3 +45,30 @@ def get_recommendations(request):
 
 
 
+
+
+# Embedding dosyası yükle
+EMBEDDINGS_PATH = os.path.join("recommendations", "data", "embeddings.pkl")
+with open(EMBEDDINGS_PATH, "rb") as f:
+    product_embeddings = pickle.load(f)
+
+def similar_products(request):
+    sku = request.GET.get("sku")
+    if not sku:
+        return JsonResponse({"error": "sku parametresi eksik"}, status=400)
+
+    similar_skus = get_similar_products(sku, product_embeddings)
+
+    products = Product.objects.filter(sku__in=similar_skus)
+    response = []
+
+    for p in products:
+        response.append({
+            "name": p.name,
+            "sku": p.sku,
+            "price": float(p.price),
+            "image": p.image_url,
+            "url": f"https://www.sinapirlanta.com/urun/{p.sku}"
+        })
+
+    return JsonResponse({"products": response})
