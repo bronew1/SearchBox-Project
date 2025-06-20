@@ -32,3 +32,13 @@ class EmailTemplateCartReminder(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class EmailTemplateRecommendation(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    subject = models.CharField(max_length=200)
+    html_content = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='email_images/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name

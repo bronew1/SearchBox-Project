@@ -2,6 +2,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from .models import EmailTemplateCartReminder, EmailTemplateWelcome
 import logging
+from django.conf import settings
+from subscriptions.models import EmailTemplateRecommendation
+import requests
 
 logger = logging.getLogger('subscriptions')
 
@@ -83,3 +86,6 @@ def send_cart_abandonment_email(user_id, product_id):
     except Exception as e:
         logger.error(f"Sepet maili gönderilemedi: {str(e)}")
         return False
+    
+
+

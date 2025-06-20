@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import EmailTemplateCartReminder, EmailTemplateWelcome, Subscriber
+from .models import EmailTemplateCartReminder, EmailTemplateRecommendation, EmailTemplateWelcome, Subscriber
 
 @admin.register(Subscriber)
 class SubscriberAdmin(admin.ModelAdmin):    list_display = ["email", "subscribed_at"]
@@ -13,3 +13,6 @@ class EmailTemplateAdmin(admin.ModelAdmin):
 @admin.register(EmailTemplateCartReminder)
 class EmailTemplateCartReminderAdmin(admin.ModelAdmin):
     list_display = ("name", "subject")
+
+
+admin.site.register(EmailTemplateRecommendation)
