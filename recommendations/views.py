@@ -47,28 +47,28 @@ def get_recommendations(request):
 
 
 
-# Embedding dosyası yükle
-EMBEDDINGS_PATH = os.path.join("recommendations", "data", "embeddings.pkl")
-with open(EMBEDDINGS_PATH, "rb") as f:
-    product_embeddings = pickle.load(f)
+# Gerekirse yol: settings.EMBEDDING_FILE_PATH gibi tanımla
+EMBEDDING_FILE_PATH = "recommendations/embeddings.pkl"
 
-def similar_products(request):
-    sku = request.GET.get("sku")
-    if not sku:
-        return JsonResponse({"error": "sku parametresi eksik"}, status=400)
+def similar_products(request, sku):
+    try:
+        with open(EMBEDDING_FILE_PATH, "rb") as f:
+            product_embeddings = pickle.load(f)
 
-    similar_skus = get_similar_products(sku, product_embeddings)
+        similar_skus = get_similar_products(sku, product_embeddings)
 
-    products = Product.objects.filter(sku__in=similar_skus)
-    response = []
+        products = Product.objects.filter(sku__in=similar_skus)
+        data = []
+        for p in products:
+            data.append({
+                "sku": p.sku,
+                "name": p.name,
+                "price": float(p.price),
+                "image": p.image_url,
+                "url": p.url,
+            })
 
-    for p in products:
-        response.append({
-            "name": p.name,
-            "sku": p.sku,
-            "price": float(p.price),
-            "image": p.image_url,
-            "url": f"https://www.sinapirlanta.com/urun/{p.sku}"
-        })
+        return JsonResponse({"products": data})
 
-    return JsonResponse({"products": response})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

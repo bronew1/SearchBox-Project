@@ -7,7 +7,7 @@ urlpatterns = [
    # path('import-ga4/', import_from_ga4, name='import_from_ga4'),
     path('trending/', trending_products, name='trending_products'),
     path("", get_recommendations, name="get_recommendations"),
-    path("similar-products/", similar_products, name="similar_products"),
+    path('similar/<str:sku>/', similar_products, name='similar_products'), 
     
 
 
