@@ -95,22 +95,23 @@ def send_cart_abandonment_email(user_id, product_id):
 
 
 
+
 def send_recommendation_email(to_email, sku="SP21930"):
     try:
-        # Admin panelinden template çek
+        # 1. Email şablonunu admin panelden al
         try:
             template = EmailTemplateRecommendation.objects.get(name="recommendation_v1")
         except EmailTemplateRecommendation.DoesNotExist:
             print("❌ Email gönderim hatası: EmailTemplateRecommendation bulunamadı (name='recommendation_v1')")
             return False
 
-        # Benzer ürünleri API'den al
+        # 2. API'den önerilen ürünleri al
         request = RequestFactory().get(f"/api/recommendations/similar/{sku}/")
         response = similar_products(request, sku=sku)
         data = json.loads(response.content)
         product_data = data.get("products", [])
 
-        # HTML kartları <table> formatında oluştur
+        # 3. HTML ürün içeriklerini oluştur
         recommended_html = """
         <table align="center" style="width:100%; max-width:600px; margin:auto;">
           <tr>
@@ -128,10 +129,12 @@ def send_recommendation_email(to_email, sku="SP21930"):
 
         recommended_html += "</tr></table>"
 
-        # Şablona göm
+        print("✅ HTML Ürün İçeriği:\n", recommended_html)
+
+        # 4. Şablonun içinde ürünleri yerine yerleştir
         html_content = template.html_content.replace("{{ recommended_products }}", recommended_html)
 
-        # Mail gönder
+        # 5. Mail gönderimi
         msg = EmailMultiAlternatives(template.subject, "", to=[to_email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
