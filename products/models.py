@@ -9,6 +9,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image_url = models.URLField()
     category = models.CharField(max_length=100, blank=True)
+    product_url = models.URLField(blank=True, null=True)  # Yeni alan
     
     def __str__(self):
         return f"{self.sku or self.external_id} - {self.name}"
