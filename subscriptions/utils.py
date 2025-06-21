@@ -98,9 +98,10 @@ def send_cart_abandonment_email(user_id, product_id):
 
 
 
-def send_recommendation_email(to_email, sku="SP21930"):
+
+def send_recommendation_email(to_email, sku):
     try:
-        # 1. Admin panelinden email şablonunu al
+        # 1. Email şablonunu admin panelden al
         try:
             template = EmailTemplateRecommendation.objects.get(name="recommendation_v1")
         except EmailTemplateRecommendation.DoesNotExist:
@@ -121,11 +122,19 @@ def send_recommendation_email(to_email, sku="SP21930"):
 
         for p in product_data:
             product_sku = p.get("sku")
-            try:
-                product_obj = Product.objects.get(sku=product_sku)
-                product_url = product_obj.product_url or "#"
-            except Product.DoesNotExist:
-                product_url = "#"
+            product_url = "#"
+
+            if product_sku:
+                try:
+                    product_obj = Product.objects.get(sku=product_sku)
+                    if product_obj.product_url:
+                        product_url = product_obj.product_url
+                    else:
+                        print(f"⚠️ {product_sku} için product_url boş!")
+                except Product.DoesNotExist:
+                    print(f"❌ Ürün bulunamadı: {product_sku}")
+            else:
+                print("❌ SKU boş geldi!")
 
             recommended_html += f"""
             <td style="text-align:center; padding:10px;">
@@ -140,7 +149,7 @@ def send_recommendation_email(to_email, sku="SP21930"):
 
         print("✅ HTML Ürün İçeriği:\n", recommended_html)
 
-        # 4. Şablonu template engine ile işle
+        # 4. Şablon HTML'ine ürünleri göm
         template_engine = Template(template.html_content)
         context = Context({
             "recommended_products": recommended_html
@@ -148,7 +157,12 @@ def send_recommendation_email(to_email, sku="SP21930"):
         html_content = template_engine.render(context)
 
         # 5. Mail gönderimi
-        msg = EmailMultiAlternatives(template.subject, "", from_email="Sina Pırlanta <no-reply@sinapirlanta.email>", to=[to_email])
+        msg = EmailMultiAlternatives(
+            subject=template.subject,
+            body="",
+            from_email="Sina Pırlanta <no-reply@sinapirlanta.email>",
+            to=[to_email]
+        )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
