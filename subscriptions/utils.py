@@ -101,20 +101,16 @@ def send_cart_abandonment_email(user_id, product_id):
 
 def send_recommendation_email(to_email, sku):
     try:
-        # 1. Email şablonunu admin panelden al
-        try:
-            template = EmailTemplateRecommendation.objects.get(name="recommendation_v1")
-        except EmailTemplateRecommendation.DoesNotExist:
-            print("❌ Email gönderim hatası: EmailTemplateRecommendation bulunamadı (name='recommendation_v1')")
-            return False
+        # 1. Şablonu al
+        template = EmailTemplateRecommendation.objects.get(name="recommendation_v1")
 
-        # 2. API'den benzer ürünleri al
+        # 2. Benzer ürünleri al
         request = RequestFactory().get(f"/api/recommendations/similar/{sku}/")
         response = similar_products(request, sku=sku)
         data = json.loads(response.content)
         product_data = data.get("products", [])
 
-        # 3. HTML ürün kartlarını oluştur
+        # 3. HTML oluştur
         recommended_html = """
         <table align="center" style="width:100%; max-width:600px; margin:auto;">
           <tr>
@@ -122,44 +118,36 @@ def send_recommendation_email(to_email, sku):
 
         for p in product_data:
             product_sku = p.get("sku")
-            product_url = "#"
+            try:
+                product_obj = Product.objects.get(sku=product_sku)
+                product_url = product_obj.product_url.strip() if product_obj.product_url else "#"
+            except Product.DoesNotExist:
+                print(f"⚠️ {product_sku} için ürün bulunamadı.")
+                product_url = "#"
 
-            if product_sku:
-                try:
-                    product_obj = Product.objects.get(sku=product_sku)
-                    if product_obj.product_url:
-                        product_url = product_obj.product_url
-                    else:
-                        print(f"⚠️ {product_sku} için product_url boş!")
-                except Product.DoesNotExist:
-                    print(f"❌ Ürün bulunamadı: {product_sku}")
-            else:
-                print("❌ SKU boş geldi!")
-
+            if product_url == "#":
+                print(f"⚠️ {product_sku} için product_url boş!")
+            
             recommended_html += f"""
             <td style="text-align:center; padding:10px;">
               <img src="{p['image']}" alt="{p['name']}" width="120" style="border-radius:8px;"><br>
               <strong>{p['name']}</strong><br>
               <span>{int(p['price'])} TL</span><br>
-              <a href="{product_url}" style="display:inline-block;margin-top:5px;padding:5px 10px;background:#ebbecb;color:#000;text-decoration:none;border-radius:4px;">İncele</a>
+              <a href="{product_url}" target="_blank" style="display:inline-block;margin-top:5px;padding:5px 10px;background:#ebbecb;color:#000;text-decoration:none;border-radius:4px;">İncele</a>
             </td>
             """
 
         recommended_html += "</tr></table>"
 
-        print("✅ HTML Ürün İçeriği:\n", recommended_html)
-
-        # 4. Şablon HTML'ine ürünleri göm
+        # 4. Template içine göm
         template_engine = Template(template.html_content)
-        context = Context({
-            "recommended_products": recommended_html
-        })
+        context = Context({"recommended_products": recommended_html})
         html_content = template_engine.render(context)
 
-        # 5. Mail gönderimi
+        # 5. Mail gönder
         msg = EmailMultiAlternatives(
-            subject=template.subject,
-            body="",
+            template.subject,
+            "",
             from_email="Sina Pırlanta <no-reply@sinapirlanta.email>",
             to=[to_email]
         )
