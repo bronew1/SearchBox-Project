@@ -9,12 +9,12 @@ def parse_xml_and_extract_products(xml_file):
         product = {
             "external_id": item.findtext("g:id", default=""),
             "sku": item.findtext("g:mpn", default=""),
-            "title": item.findtext("title"),
+            "name": item.findtext("title", default=""),
             "description": item.findtext("description", default=""),
-            "price": item.findtext("g:price", default="0").replace(" TRY", "").replace(",", ""),
+            "price": item.findtext("g:price", default="").replace(" TRY", ""),
             "image_url": item.findtext("g:image_link", default=""),
+            "product_url": item.findtext("link", default=""),
             "category": item.findtext("g:product_type", default=""),
-            "product_url": item.findtext("link", default="")  # 🔥 en önemlisi bu
         }
         products.append(product)
     return products
