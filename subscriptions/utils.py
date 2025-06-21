@@ -97,6 +97,7 @@ def send_cart_abandonment_email(user_id, product_id):
 
 
 
+
 def send_recommendation_email(to_email, sku="SP21930"):
     try:
         # 1. Admin panelinden email şablonunu al
@@ -119,12 +120,19 @@ def send_recommendation_email(to_email, sku="SP21930"):
         """
 
         for p in product_data:
+            product_sku = p.get("sku")
+            try:
+                product_obj = Product.objects.get(sku=product_sku)
+                product_url = product_obj.product_url or "#"
+            except Product.DoesNotExist:
+                product_url = "#"
+
             recommended_html += f"""
             <td style="text-align:center; padding:10px;">
               <img src="{p['image']}" alt="{p['name']}" width="120" style="border-radius:8px;"><br>
               <strong>{p['name']}</strong><br>
               <span>{int(p['price'])} TL</span><br>
-              <a href="{p['url']}" style="display:inline-block;margin-top:5px;padding:5px 10px;background:#ebbecb;color:#000;text-decoration:none;border-radius:4px;">İncele</a>
+              <a href="{product_url}" style="display:inline-block;margin-top:5px;padding:5px 10px;background:#ebbecb;color:#000;text-decoration:none;border-radius:4px;">İncele</a>
             </td>
             """
 
@@ -132,7 +140,7 @@ def send_recommendation_email(to_email, sku="SP21930"):
 
         print("✅ HTML Ürün İçeriği:\n", recommended_html)
 
-        # 4. Şablonu template engine ile işle (|safe filtresi çalışsın diye)
+        # 4. Şablonu template engine ile işle
         template_engine = Template(template.html_content)
         context = Context({
             "recommended_products": recommended_html
@@ -140,7 +148,7 @@ def send_recommendation_email(to_email, sku="SP21930"):
         html_content = template_engine.render(context)
 
         # 5. Mail gönderimi
-        msg = EmailMultiAlternatives(template.subject, "", to=[to_email])
+        msg = EmailMultiAlternatives(template.subject, "", from_email="Sina Pırlanta <no-reply@sinapirlanta.email>", to=[to_email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
