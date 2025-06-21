@@ -1,3 +1,4 @@
+from urllib import response
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from .models import EmailTemplateCartReminder, EmailTemplateWelcome
@@ -7,6 +8,7 @@ from subscriptions.models import EmailTemplateRecommendation
 import requests
 from recommendations.views import similar_products
 from products.models import Product
+from django.test import RequestFactory
 
 logger = logging.getLogger('subscriptions')
 
@@ -100,7 +102,7 @@ def send_recommendation_email(to_email, sku="SP21930"):
         # Benzer ürünleri al
         request = RequestFactory().get(f"/api/recommendations/similar/{sku}/")
         response = similar_products(request, sku=sku)
-        product_data = response.json().get("products", [])
+        product_data = response.json()["products"]
 
         # Eğer önerilecek ürün yoksa boş döndür
         if not product_data:
