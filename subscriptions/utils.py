@@ -10,6 +10,7 @@ from recommendations.views import similar_products
 from products.models import Product
 from django.test import RequestFactory
 import json
+from django.template import Template, Context
 
 logger = logging.getLogger('subscriptions')
 
@@ -98,20 +99,20 @@ def send_cart_abandonment_email(user_id, product_id):
 
 def send_recommendation_email(to_email, sku="SP21930"):
     try:
-        # 1. Email şablonunu admin panelden al
+        # 1. Admin panelinden email şablonunu al
         try:
             template = EmailTemplateRecommendation.objects.get(name="recommendation_v1")
         except EmailTemplateRecommendation.DoesNotExist:
             print("❌ Email gönderim hatası: EmailTemplateRecommendation bulunamadı (name='recommendation_v1')")
             return False
 
-        # 2. API'den önerilen ürünleri al
+        # 2. API'den benzer ürünleri al
         request = RequestFactory().get(f"/api/recommendations/similar/{sku}/")
         response = similar_products(request, sku=sku)
         data = json.loads(response.content)
         product_data = data.get("products", [])
 
-        # 3. HTML ürün içeriklerini oluştur
+        # 3. HTML ürün kartlarını oluştur
         recommended_html = """
         <table align="center" style="width:100%; max-width:600px; margin:auto;">
           <tr>
@@ -131,8 +132,12 @@ def send_recommendation_email(to_email, sku="SP21930"):
 
         print("✅ HTML Ürün İçeriği:\n", recommended_html)
 
-        # 4. Şablonun içinde ürünleri yerine yerleştir
-        html_content = template.html_content.replace("{{ recommended_products }}", recommended_html)
+        # 4. Şablonu template engine ile işle (|safe filtresi çalışsın diye)
+        template_engine = Template(template.html_content)
+        context = Context({
+            "recommended_products": recommended_html
+        })
+        html_content = template_engine.render(context)
 
         # 5. Mail gönderimi
         msg = EmailMultiAlternatives(template.subject, "", to=[to_email])
