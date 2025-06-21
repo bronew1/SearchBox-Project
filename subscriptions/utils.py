@@ -104,30 +104,34 @@ def send_recommendation_email(to_email, sku="SP21930"):
             print("❌ Email gönderim hatası: EmailTemplateRecommendation bulunamadı (name='recommendation_v1')")
             return False
 
-        # API view'ı çağır
+        # Benzer ürünleri API'den al
         request = RequestFactory().get(f"/api/recommendations/similar/{sku}/")
         response = similar_products(request, sku=sku)
-
-        # response.content içeriğini parse et
         data = json.loads(response.content)
         product_data = data.get("products", [])
 
-        # HTML kartları oluştur
-        recommended_html = ""
+        # HTML kartları <table> formatında oluştur
+        recommended_html = """
+        <table align="center" style="width:100%; max-width:600px; margin:auto;">
+          <tr>
+        """
+
         for p in product_data:
             recommended_html += f"""
-                <div style="display:inline-block; text-align:center; margin:10px;">
-                    <img src="{p['image']}" alt="{p['name']}" width="140"><br>
-                    <strong>{p['name']}</strong><br>
-                    <span>{p['price']} TL</span><br>
-                    <a href="{p['url']}" style="display:inline-block;margin-top:5px;padding:5px 10px;background:#ebbecb;color:#000;text-decoration:none;border-radius:4px;">İncele</a>
-                </div>
+            <td style="text-align:center; padding:10px;">
+              <img src="{p['image']}" alt="{p['name']}" width="120" style="border-radius:8px;"><br>
+              <strong>{p['name']}</strong><br>
+              <span>{int(p['price'])} TL</span><br>
+              <a href="{p['url']}" style="display:inline-block;margin-top:5px;padding:5px 10px;background:#ebbecb;color:#000;text-decoration:none;border-radius:4px;">İncele</a>
+            </td>
             """
 
-        # Şablon içine göm
+        recommended_html += "</tr></table>"
+
+        # Şablona göm
         html_content = template.html_content.replace("{{ recommended_products }}", recommended_html)
 
-        # Mail gönderimi
+        # Mail gönder
         msg = EmailMultiAlternatives(template.subject, "", to=[to_email])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
