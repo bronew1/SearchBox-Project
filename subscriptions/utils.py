@@ -9,6 +9,7 @@ import requests
 from recommendations.views import similar_products
 from products.models import Product
 from django.test import RequestFactory
+import json
 
 logger = logging.getLogger('subscriptions')
 
