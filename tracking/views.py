@@ -4,6 +4,9 @@ import json
 from django.utils import timezone
 from datetime import timedelta
 from tracking.models import CartAbandonment, UserEvent
+from django.db.models.functions import TruncDate
+from django.db.models import Count
+from django.utils.timezone import now
 
 @csrf_exempt
 def track_event(request):
@@ -57,3 +60,21 @@ def cart_count(request, product_id):
     ).values("user_id").distinct().count()
 
     return JsonResponse({"count": count})
+
+
+
+def daily_add_to_cart_stats(request):
+    days = 7
+    end_date = now().date()
+    start_date = end_date - timedelta(days=days)
+
+    data = (
+        UserEvent.objects
+        .filter(event_name="add_to_cart", created_at__date__range=(start_date, end_date))
+        .annotate(date=TruncDate("created_at"))
+        .values("date")
+        .annotate(count=Count("id"))
+        .order_by("date")
+    )
+
+    return JsonResponse(list(data), safe=False)
