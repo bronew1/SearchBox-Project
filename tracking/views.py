@@ -63,18 +63,3 @@ def cart_count(request, product_id):
 
 
 
-def daily_add_to_cart_stats(request):
-    days = 7
-    end_date = now().date()
-    start_date = end_date - timedelta(days=days)
-
-    data = (
-        UserEvent.objects
-        .filter(event_name="add_to_cart", created_at__date__range=(start_date, end_date))
-        .annotate(date=TruncDate("created_at"))
-        .values("date")
-        .annotate(count=Count("id"))
-        .order_by("date")
-    )
-
-    return JsonResponse(list(data), safe=False)
