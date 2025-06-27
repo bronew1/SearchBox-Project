@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
-from tracking.models import save_subscription
+from tracking.views import save_subscription  # ✔️ Doğru
 from tracking.views import cart_count, public_vapid_key, service_worker, track_event
 from subscriptions.views import subscribe 
 from django.conf import settings

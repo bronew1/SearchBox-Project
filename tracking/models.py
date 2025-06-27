@@ -1,9 +1,6 @@
 from django.db import models
 from django.http import JsonResponse
 from django.utils import timezone
-import json
-from .models import PushSubscription
-from django.views.decorators.csrf import csrf_exempt
 
 class UserEvent(models.Model):
     EVENT_CHOICES = [
@@ -32,14 +29,6 @@ class CartAbandonment(models.Model):
 
 
 class PushSubscription(models.Model):
-    user_id = models.CharField(max_length=255)
-    subscription_info = models.JSONField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-# tracking/models.py
-
-class PushSubscription(models.Model):
     endpoint = models.TextField()
     keys_auth = models.CharField(max_length=256)
     keys_p256dh = models.CharField(max_length=256)
@@ -47,24 +36,3 @@ class PushSubscription(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-@csrf_exempt
-def save_subscription(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        endpoint = data.get("endpoint")
-        keys = data.get("keys", {})
-        auth = keys.get("auth")
-        p256dh = keys.get("p256dh")
-        user_id = request.COOKIES.get("user_id")  # veya başka bir user tracking metodu
-
-        # kaydet veya güncelle
-        PushSubscription.objects.update_or_create(
-            endpoint=endpoint,
-            defaults={
-                "keys_auth": auth,
-                "keys_p256dh": p256dh,
-                "user_id": user_id
-            }
-        )
-        return JsonResponse({"status": "success"})
-    return JsonResponse({"error": "invalid method"}, status=405)
