@@ -24,3 +24,20 @@ class CartAbandonment(models.Model):
     added_at = models.DateTimeField(default=timezone.now)
     is_purchased = models.BooleanField(default=False)
     is_email_sent = models.BooleanField(default=False)
+
+
+
+class PushSubscription(models.Model):
+    user_id = models.CharField(max_length=255)
+    subscription_info = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+# tracking/models.py
+
+class PushSubscription(models.Model):
+    endpoint = models.TextField()
+    keys_auth = models.CharField(max_length=256)
+    keys_p256dh = models.CharField(max_length=256)
+    user_id = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)

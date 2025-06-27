@@ -1,12 +1,16 @@
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 import json
 from django.utils import timezone
 from datetime import timedelta
-from tracking.models import CartAbandonment, UserEvent
+from backend import settings
+from tracking.models import CartAbandonment, PushSubscription, UserEvent
 from django.db.models.functions import TruncDate
 from django.db.models import Count
 from django.utils.timezone import now
+from pywebpush import webpush
+from django.http import FileResponse
+import os
 
 @csrf_exempt
 def track_event(request):
@@ -63,3 +67,26 @@ def cart_count(request, product_id):
 
 
 
+
+def send_push(subscription, message):
+    webpush(
+        subscription_info={
+            "endpoint": subscription.endpoint,
+            "keys": {
+                "p256dh": subscription.keys_p256dh,
+                "auth": subscription.keys_auth
+            }
+        },
+        data=message,
+        vapid_private_key=settings.VAPID_PRIVATE_KEY,
+        vapid_claims={"sub": "mailto:berk@sinapirlanta.com"}
+    )
+
+
+def public_vapid_key(request):
+    return HttpResponse(settings.VAPID_PUBLIC_KEY)
+
+
+def service_worker(request):
+    filepath = os.path.join(settings.BASE_DIR, 'static', 'service-worker.js')
+    return FileResponse(open(filepath, 'rb'), content_type='application/javascript')
