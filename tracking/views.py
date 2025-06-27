@@ -116,3 +116,4 @@ def save_subscription(request):
             return JsonResponse({"status": "missing data"}, status=400)
 
     return JsonResponse({"error": "invalid method"}, status=405)
+#
