@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 from tracking.models import save_subscription
-from tracking.views import cart_count, public_vapid_key, track_event
+from tracking.views import cart_count, public_vapid_key, service_worker, track_event
 from subscriptions.views import subscribe 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -23,6 +23,7 @@ urlpatterns = [
     path("api/cart-count/<str:product_id>/", cart_count),
     path("api/public-key/", public_vapid_key),
     path("api/save-subscription/", save_subscription),
+    path('service-worker.js', service_worker),
     
    # path("api/", include("products.urls")),
     
