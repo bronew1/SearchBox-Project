@@ -18,3 +18,5 @@ class CartAbandonmentAdmin(admin.ModelAdmin):
 class PushSubscriptionAdmin(admin.ModelAdmin):
     list_display = ('endpoint', 'user_id', 'created_at')
     search_fields = ('user_id', 'endpoint')
+
+#
