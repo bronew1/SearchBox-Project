@@ -90,3 +90,25 @@ def public_vapid_key(request):
 def service_worker(request):
     filepath = os.path.join(settings.BASE_DIR, 'static', 'service-worker.js')
     return FileResponse(open(filepath, 'rb'), content_type='application/javascript')
+
+@csrf_exempt
+def save_subscription(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        endpoint = data.get("endpoint")
+        keys = data.get("keys", {})
+        auth = keys.get("auth")
+        p256dh = keys.get("p256dh")
+        user_id = request.COOKIES.get("user_id")  # veya başka bir user tracking metodu
+
+        # kaydet veya güncelle
+        PushSubscription.objects.update_or_create(
+            endpoint=endpoint,
+            defaults={
+                "keys_auth": auth,
+                "keys_p256dh": p256dh,
+                "user_id": user_id
+            }
+        )
+        return JsonResponse({"status": "success"})
+    return JsonResponse({"error": "invalid method"}, status=405)
