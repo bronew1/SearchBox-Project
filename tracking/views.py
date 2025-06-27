@@ -95,20 +95,24 @@ def service_worker(request):
 def save_subscription(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        endpoint = data.get("endpoint")
-        keys = data.get("keys", {})
+        subscription = data.get("subscription", {})
+        endpoint = subscription.get("endpoint")
+        keys = subscription.get("keys", {})
         auth = keys.get("auth")
         p256dh = keys.get("p256dh")
-        user_id = request.COOKIES.get("user_id")  # veya başka bir user tracking metodu
+        user_id = data.get("user_id") or request.COOKIES.get("user_id")
 
-        # kaydet veya güncelle
-        PushSubscription.objects.update_or_create(
-            endpoint=endpoint,
-            defaults={
-                "keys_auth": auth,
-                "keys_p256dh": p256dh,
-                "user_id": user_id
-            }
-        )
-        return JsonResponse({"status": "success"})
+        if endpoint and auth and p256dh:
+            PushSubscription.objects.update_or_create(
+                endpoint=endpoint,
+                defaults={
+                    "keys_auth": auth,
+                    "keys_p256dh": p256dh,
+                    "user_id": user_id
+                }
+            )
+            return JsonResponse({"status": "success"})
+        else:
+            return JsonResponse({"status": "missing data"}, status=400)
+
     return JsonResponse({"error": "invalid method"}, status=405)
