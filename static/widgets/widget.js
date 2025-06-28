@@ -16,21 +16,27 @@
 
     const style = `
       #bestseller-toggle {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        width: 55px;
-        height: 55px;
-        background-color: #ebbecb;
-        border-radius: 50%;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        z-index: 9999;
-        font-size: 20px;
-      }
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 55px;
+  height: 55px;
+  background-color: #ebbecb;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 9999;
+  font-size: 10px;         /* ✅ Küçültüldü */
+  line-height: 1.2;        /* ✅ Satır aralığı */
+  text-align: center;      /* ✅ Merkezle */
+  padding: 4px;           /* ✅ İç boşluk */
+  overflow: hidden;        /* ✅ Taşmayı engelle */
+  white-space: normal;     /* ✅ Çok satır destekle */
+}
+
 
       #bestseller-popup {
         position: fixed;
