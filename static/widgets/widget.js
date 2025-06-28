@@ -35,6 +35,7 @@
   padding: 4px;           /* ✅ İç boşluk */
   overflow: hidden;        /* ✅ Taşmayı engelle */
   white-space: normal;     /* ✅ Çok satır destekle */
+  font-weight: bold;  
 }
 
 
