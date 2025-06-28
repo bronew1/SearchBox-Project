@@ -152,7 +152,7 @@
 
     const toggle = document.createElement("div");
     toggle.id = "bestseller-toggle";
-    toggle.innerText = "💎";
+    toggle.innerText = "ONLİNE ÖZEL";
     toggle.onclick = () => {
       const popup = document.getElementById("bestseller-popup");
       state.visible = !state.visible;
@@ -162,7 +162,7 @@
     const popup = document.createElement("div");
     popup.id = "bestseller-popup";
     popup.innerHTML = `
-      <h2>ÇOK SATANLAR</h2>
+      <h2>EN ÇOK TERCİH EDİLEN!</h2>
       <div class="bestseller-product-grid">
         ${state.products
           .map(
