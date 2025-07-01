@@ -11,6 +11,11 @@ from django.utils.timezone import now
 from pywebpush import webpush
 from django.http import FileResponse
 import os
+from django.db.models.functions import TruncDate
+from django.db.models import Count
+from django.http import JsonResponse
+from tracking.models import UserEvent
+
 
 @csrf_exempt
 def track_event(request):
@@ -79,7 +84,7 @@ def send_push(subscription, message):
         },
         data=message,
         vapid_private_key=settings.VAPID_PRIVATE_KEY,
-        vapid_claims={"sub": "mailto:berk@sinapirlanta.com"}
+        vapid_claims={"sub": "mailto:berk.oztug@sinapirlanta.com"}
     )
 
 
@@ -116,4 +121,24 @@ def save_subscription(request):
             return JsonResponse({"status": "missing data"}, status=400)
 
     return JsonResponse({"error": "invalid method"}, status=405)
-#
+
+
+
+
+def daily_add_to_cart_counts(request):
+    # Son 30 gün
+    from django.utils import timezone
+    today = timezone.now().date()
+    last_30_days = today - timedelta(days=30)
+
+    queryset = (
+        UserEvent.objects.filter(event_name="add_to_cart", timestamp__date__gte=last_30_days)
+        .annotate(day=TruncDate('timestamp'))
+        .values('day')
+        .annotate(count=Count('id'))
+        .order_by('day')
+    )
+
+    # JSON çıktısı: örn. [{"day": "2024-06-01", "count": 10}, ...]
+    data = [{"day": str(entry["day"]), "count": entry["count"]} for entry in queryset]
+    return JsonResponse(data, safe=False)
