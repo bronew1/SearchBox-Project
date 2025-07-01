@@ -15,6 +15,8 @@ from django.db.models.functions import TruncDate
 from django.db.models import Count
 from django.http import JsonResponse
 from tracking.models import UserEvent
+from datetime import datetime, timedelta
+from django.utils import timezone
 
 
 @csrf_exempt
@@ -126,19 +128,29 @@ def save_subscription(request):
 
 
 def daily_add_to_cart_counts(request):
-    # Son 30 gün
-    from django.utils import timezone
     today = timezone.now().date()
-    last_30_days = today - timedelta(days=30)
+    default_start = today - timedelta(days=30)
+
+    start_date_str = request.GET.get("start_date")
+    end_date_str = request.GET.get("end_date")
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else default_start
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else today
+    except ValueError:
+        return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
 
     queryset = (
-        UserEvent.objects.filter(event_name="add_to_cart", timestamp__date__gte=last_30_days)
+        UserEvent.objects.filter(
+            event_name="add_to_cart",
+            timestamp__date__gte=start_date,
+            timestamp__date__lte=end_date,
+        )
         .annotate(day=TruncDate('timestamp'))
         .values('day')
         .annotate(count=Count('id'))
         .order_by('day')
     )
 
-    # JSON çıktısı: örn. [{"day": "2024-06-01", "count": 10}, ...]
     data = [{"day": str(entry["day"]), "count": entry["count"]} for entry in queryset]
     return JsonResponse(data, safe=False)
