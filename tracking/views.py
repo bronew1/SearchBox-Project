@@ -178,3 +178,45 @@ def user_events_list(request):
         })
 
     return JsonResponse(data, safe=False)
+
+
+def dashboard_stats(request):
+    now = timezone.now()
+
+    # Zaman aralıkları
+    one_week_ago = now - timedelta(days=7)
+    two_weeks_ago = now - timedelta(days=14)
+
+    # Toplam user event sayısı (son 7 gün)
+    total_events_last_week = UserEvent.objects.filter(timestamp__gte=one_week_ago).count()
+
+    # Önceki hafta
+    total_events_prev_week = UserEvent.objects.filter(timestamp__gte=two_weeks_ago, timestamp__lt=one_week_ago).count()
+
+    # Sepete ekleme sayısı (son 7 gün)
+    add_to_cart_last_week = UserEvent.objects.filter(event_name="add_to_cart", timestamp__gte=one_week_ago).count()
+
+    # Önceki hafta
+    add_to_cart_prev_week = UserEvent.objects.filter(event_name="add_to_cart", timestamp__gte=two_weeks_ago, timestamp__lt=one_week_ago).count()
+
+    # Yüzde değişim hesaplama
+    def calculate_change(current, previous):
+        if previous == 0:
+            return 100.0 if current > 0 else 0.0
+        return ((current - previous) / previous) * 100
+
+    total_events_change = calculate_change(total_events_last_week, total_events_prev_week)
+    add_to_cart_change = calculate_change(add_to_cart_last_week, add_to_cart_prev_week)
+
+    data = {
+        "total_events": {
+            "count": total_events_last_week,
+            "change": round(total_events_change, 2)
+        },
+        "add_to_cart": {
+            "count": add_to_cart_last_week,
+            "change": round(add_to_cart_change, 2)
+        }
+    }
+
+    return JsonResponse(data)
