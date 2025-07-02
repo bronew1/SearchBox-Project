@@ -4,8 +4,9 @@ import logging
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from .models import Subscriber
+from .models import EmailTemplateWelcome, Subscriber
 from .utils import send_welcome_email
+from django.views.decorators.http import require_GET
 
 logger = logging.getLogger('subscriptions')
 
@@ -66,3 +67,19 @@ def subscribe(request):
     with open(log_path, "a") as f:
         f.write("❌ Desteklenmeyen method, hata döndürüldü\n")
     return JsonResponse({"error": "Sadece GET veya POST desteklenir."}, status=405)
+
+
+
+@require_GET
+def get_welcome_email_template(request):
+    try:
+        template = EmailTemplateWelcome.objects.get(name="welcome_email")
+        data = {
+            "name": template.name,
+            "subject": template.subject,
+            "html_content": template.html_content,
+            "image_url": template.image.url if template.image else None,
+        }
+        return JsonResponse(data)
+    except EmailTemplateWelcome.DoesNotExist:
+        return JsonResponse({"error": "Template bulunamadı"}, status=404)
