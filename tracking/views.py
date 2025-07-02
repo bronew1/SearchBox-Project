@@ -17,6 +17,8 @@ from django.http import JsonResponse
 from tracking.models import UserEvent
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.views.decorators.http import require_GET
+from django.core.serializers import serialize
 
 
 @csrf_exempt
@@ -153,4 +155,26 @@ def daily_add_to_cart_counts(request):
     )
 
     data = [{"day": str(entry["day"]), "count": entry["count"]} for entry in queryset]
+    return JsonResponse(data, safe=False)
+
+
+
+@require_GET
+def user_events_list(request):
+    """
+    Kullanıcı eventlerini frontend için JSON olarak döner.
+    """
+    events = UserEvent.objects.all().order_by("-timestamp")[:500]  # Son 500 hareket (istersen arttır)
+    data = []
+
+    for event in events:
+        data.append({
+            "id": event.id,
+            "event_name": event.event_name,
+            "product_id": event.product_id,
+            "user_id": event.user_id,
+            "event_value": event.event_value,
+            "timestamp": event.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+        })
+
     return JsonResponse(data, safe=False)
