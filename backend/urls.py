@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
-from tracking.views import daily_add_to_cart_counts, save_subscription  # ✔️ Doğru
+from tracking.views import daily_add_to_cart_counts, save_subscription, user_events_list  # ✔️ Doğru
 from tracking.views import cart_count, public_vapid_key, service_worker, track_event
 from subscriptions.views import subscribe 
 from django.conf import settings
@@ -25,7 +25,7 @@ urlpatterns = [
     path("api/save-subscription/", save_subscription),
     path('service-worker.js', service_worker),
     path("api/daily-add-to-cart/", daily_add_to_cart_counts, name="daily_add_to_cart"),
-    
+    path("api/user-events/", user_events_list, name="user_events_list")
 
 
     
