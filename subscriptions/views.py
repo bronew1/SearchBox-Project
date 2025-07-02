@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-
+from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import EmailTemplateWelcome, Subscriber
@@ -83,3 +83,23 @@ def get_welcome_email_template(request):
         return JsonResponse(data)
     except EmailTemplateWelcome.DoesNotExist:
         return JsonResponse({"error": "Template bulunamadı"}, status=404)
+    
+
+@csrf_exempt
+@require_http_methods(["PATCH"])
+def update_welcome_email_template(request):
+    try:
+        data = json.loads(request.body)
+
+        template = EmailTemplateWelcome.objects.get(name="welcome_email")
+
+        template.name = data.get("name", template.name)
+        template.subject = data.get("subject", template.subject)
+        template.html_content = data.get("html_content", template.html_content)
+        template.save()
+
+        return JsonResponse({"status": "ok"})
+    except EmailTemplateWelcome.DoesNotExist:
+        return JsonResponse({"error": "Template bulunamadı"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
