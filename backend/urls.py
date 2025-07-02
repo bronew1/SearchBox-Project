@@ -25,7 +25,7 @@ urlpatterns = [
     path("api/save-subscription/", save_subscription),
     path('service-worker.js', service_worker),
     path("api/daily-add-to-cart/", daily_add_to_cart_counts, name="daily_add_to_cart"),
-    path("api/welcome-template/", include("subscriptions.urls")),
+    
 
 
     
