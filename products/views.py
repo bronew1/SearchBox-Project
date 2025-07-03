@@ -2,6 +2,10 @@ import xml.etree.ElementTree as ET
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from products.models import Product, WidgetProduct
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import WidgetProduct
+import json
 
 @csrf_exempt
 def upload_xml(request):
@@ -64,14 +68,55 @@ def upload_xml(request):
 
 
 
+
+@csrf_exempt
 def widget_products(request):
-    products = WidgetProduct.objects.all()
-    data = [{
-        "name": p.name,
-        "price": p.price,
-        "sku": p.sku,
-        "image_url": p.image_url,
-        "hover_image_url": p.hover_image_url,
-        "url": p.product_url
-    } for p in products]
-    return JsonResponse({"products": data})
+    if request.method == "GET":
+        products = WidgetProduct.objects.all()
+        data = []
+        for p in products:
+            data.append({
+                "id": p.id,
+                "name": p.name,
+                "image_url": p.image_url,
+                "hover_image_url": p.hover_image_url,
+                "price": p.price,
+                "product_url": p.product_url,
+                "sku": p.sku,
+                "order": p.order,
+            })
+        return JsonResponse(data, safe=False)
+
+    elif request.method == "POST":
+        data = json.loads(request.body)
+        p = WidgetProduct.objects.create(
+            name=data.get("name"),
+            image_url=data.get("image_url"),
+            hover_image_url=data.get("hover_image_url"),
+            price=data.get("price"),
+            product_url=data.get("product_url"),
+            sku=data.get("sku"),
+            order=data.get("order", 0),
+        )
+        return JsonResponse({"status": "success", "id": p.id})
+
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        p = WidgetProduct.objects.get(id=data.get("id"))
+        p.name = data.get("name", p.name)
+        p.image_url = data.get("image_url", p.image_url)
+        p.hover_image_url = data.get("hover_image_url", p.hover_image_url)
+        p.price = data.get("price", p.price)
+        p.product_url = data.get("product_url", p.product_url)
+        p.sku = data.get("sku", p.sku)
+        p.order = data.get("order", p.order)
+        p.save()
+        return JsonResponse({"status": "success"})
+
+    elif request.method == "DELETE":
+        data = json.loads(request.body)
+        p = WidgetProduct.objects.get(id=data.get("id"))
+        p.delete()
+        return JsonResponse({"status": "deleted"})
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
