@@ -1,5 +1,12 @@
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
-from google.analytics.data_v1beta.types import DateRange, Metric, Dimension, RunReportRequest
+from google.analytics.data_v1beta.types import (
+    DateRange,
+    Metric,
+    Dimension,
+    RunReportRequest,
+    FilterExpression,
+    Filter,
+)
 from google.oauth2 import service_account
 from products.models import Product
 
@@ -12,6 +19,7 @@ credentials = service_account.Credentials.from_service_account_file(
 )
 
 client = BetaAnalyticsDataClient(credentials=credentials)
+
 
 def get_top_products(event_type="purchase", limit=10):
     request = RunReportRequest(
@@ -59,23 +67,15 @@ def get_top_products(event_type="purchase", limit=10):
 def get_total_revenue(start_date="28daysAgo", end_date="today"):
     request = RunReportRequest(
         property=f"properties/{PROPERTY_ID}",
-        dimensions=[
-            Dimension(name="eventName"),
-        ],
-        metrics=[
-            Metric(name="purchaseRevenue"),
-        ],
-        date_ranges=[
-            DateRange(start_date=start_date, end_date=end_date)
-        ],
-        dimension_filter={
-            "filter": {
-                "field_name": "eventName",
-                "string_filter": {
-                    "value": "purchase",
-                },
-            }
-        }
+        dimensions=[Dimension(name="eventName")],
+        metrics=[Metric(name="purchaseRevenue")],
+        date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
+        dimension_filter=FilterExpression(
+            filter=Filter(
+                field_name="eventName",
+                string_filter=Filter.StringFilter(value="purchase")
+            )
+        )
     )
 
     response = client.run_report(request)
