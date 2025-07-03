@@ -64,9 +64,9 @@ def get_top_products(event_type="purchase", limit=10):
 
 
 ###########################
-def get_total_revenue(start_date="28daysAgo", end_date="today"):
+def get_total_revenue(property_id, start_date="28daysAgo", end_date="today"):
     request = RunReportRequest(
-        property=f"properties/{PROPERTY_ID}",
+        property=f"properties/{property_id}",
         dimensions=[Dimension(name="eventName")],
         metrics=[Metric(name="purchaseRevenue")],
         date_ranges=[DateRange(start_date=start_date, end_date=end_date)],
