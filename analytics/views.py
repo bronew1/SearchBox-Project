@@ -1,4 +1,6 @@
 from django.http import JsonResponse
+
+from recommendations.services.ga4_fetcher import get_total_revenue
 from .services.ga4_api import fetch_search_terms
 
 
@@ -15,3 +17,13 @@ def search_terms_view(request):
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
+
+
+def revenue_view(request):
+    start_date = request.GET.get("start_date", "28daysAgo")
+    end_date = request.GET.get("end_date", "today")
+    try:
+        revenue = get_total_revenue(start_date=start_date, end_date=end_date)
+        return JsonResponse({"status": "success", "revenue": revenue})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
