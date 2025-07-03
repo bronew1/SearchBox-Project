@@ -226,22 +226,26 @@ def dashboard_stats(request):
 
 @require_GET
 def most_viewed_products(request):
+    # URL parametrelerinden tarih aralığını al
     start_date_str = request.GET.get("start_date")
     end_date_str = request.GET.get("end_date")
 
     try:
+        # Parametre varsa kullan, yoksa son 30 günü al
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date() if start_date_str else timezone.now().date() - timedelta(days=30)
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date() if end_date_str else timezone.now().date()
     except ValueError:
         return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
 
+    # "view_item" event'ine göre en çok görüntülenen ürünleri bul
     queryset = (
         UserEvent.objects
         .filter(event_name="view_item", timestamp__date__gte=start_date, timestamp__date__lte=end_date)
         .values("product_id")
         .annotate(count=Count("id"))
-        .order_by("-count")[:10]  # en çok görüntülenen ilk 10 ürün
+        .order_by("-count")[:10]  # ilk 10 ürün
     )
 
+    # Sonuçları JSON formatına çevir
     data = [{"product_id": entry["product_id"], "count": entry["count"]} for entry in queryset]
     return JsonResponse(data, safe=False)
