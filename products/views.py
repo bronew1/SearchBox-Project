@@ -4,6 +4,9 @@ from django.http import JsonResponse
 from products.models import Product, WidgetProduct
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import viewsets
+
+from products.serializers import WidgetProductSerializer
 from .models import WidgetProduct
 import json
 
@@ -120,3 +123,10 @@ def widget_products(request):
         return JsonResponse({"status": "deleted"})
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+
+
+class WidgetProductViewSet(viewsets.ModelViewSet):
+    queryset = WidgetProduct.objects.all().order_by("order")
+    serializer_class = WidgetProductSerializer
