@@ -16,7 +16,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/product/', include('products.urls')),
     path('api/recommendations/', include('recommendations.urls')),
-    path("api/ga4", include("analytics.urls")),
+    path("api/ga4/", include("analytics.urls")),
     path("healthz", health_check),
     path("api/track-event/", track_event, name="track_event"),
     path('api/subscribe/', include('subscriptions.urls')),
