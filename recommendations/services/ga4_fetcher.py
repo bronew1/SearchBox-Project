@@ -53,3 +53,35 @@ def get_top_products(event_type="purchase", limit=10):
         })
 
     return results
+
+
+###########################
+def get_total_revenue(start_date="28daysAgo", end_date="today"):
+    request = RunReportRequest(
+        property=f"properties/{PROPERTY_ID}",
+        dimensions=[
+            Dimension(name="eventName"),
+        ],
+        metrics=[
+            Metric(name="purchaseRevenue"),
+        ],
+        date_ranges=[
+            DateRange(start_date=start_date, end_date=end_date)
+        ],
+        dimension_filter={
+            "filter": {
+                "field_name": "eventName",
+                "string_filter": {
+                    "value": "purchase",
+                },
+            }
+        }
+    )
+
+    response = client.run_report(request)
+
+    revenue = 0.0
+    for row in response.rows:
+        if row.dimension_values[0].value == "purchase":
+            revenue = float(row.metric_values[0].value)
+    return revenue
