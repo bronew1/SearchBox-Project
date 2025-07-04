@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
+from products.views import widget_products
 from tracking.views import daily_add_to_cart_counts, dashboard_stats, most_viewed_products, save_subscription, user_events_list  # ✔️ Doğru
 from tracking.views import cart_count, public_vapid_key, service_worker, track_event
 from subscriptions.views import subscribe 
@@ -28,6 +29,7 @@ urlpatterns = [
     path("api/user-events/", user_events_list, name="user_events_list"),
     path("api/dashboard-stats/", dashboard_stats, name="dashboard_stats"),
     path("api/most-viewed-products/", most_viewed_products, name="most_viewed_products"),
+    path("api/widget-products/", widget_products, name="widget-products"),
 
 
     
