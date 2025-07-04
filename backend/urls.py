@@ -31,6 +31,7 @@ urlpatterns = [
     path("api/most-viewed-products/", most_viewed_products, name="most_viewed_products"),
     path("api/widget-products/", widget_products, name="widget-products"),
     path("widget-products/<int:id>/", widget_products, name="widget-products-detail"),
+    path("api/campains/", include("campains.urls")),
 
 
     
