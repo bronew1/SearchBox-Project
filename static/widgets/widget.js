@@ -2,10 +2,10 @@
   const state = { visible: false, products: [] };
 
   function fetchProducts() {
-    fetch("https://searchprojectdemo.com/api/product/widget-products/")
+    fetch("https://searchprojectdemo.com/api/widget-products/")
       .then((res) => res.json())
       .then((data) => {
-        state.products = data.products;
+        state.products = data; // ✅ products değil, direkt data
         renderPopup();
       });
   }
@@ -16,28 +16,27 @@
 
     const style = `
       #bestseller-toggle {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 55px;
-  height: 55px;
-  background-color: #ebbecb;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 9999;
-  font-size: 10px;         /* ✅ Küçültüldü */
-  line-height: 1.2;        /* ✅ Satır aralığı */
-  text-align: center;      /* ✅ Merkezle */
-  padding: 4px;           /* ✅ İç boşluk */
-  overflow: hidden;        /* ✅ Taşmayı engelle */
-  white-space: normal;     /* ✅ Çok satır destekle */
-  font-weight: bold;  
-}
-
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 55px;
+        height: 55px;
+        background-color: #ebbecb;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 9999;
+        font-size: 10px;
+        line-height: 1.2;
+        text-align: center;
+        padding: 4px;
+        overflow: hidden;
+        white-space: normal;
+        font-weight: bold;
+      }
 
       #bestseller-popup {
         position: fixed;
@@ -47,7 +46,7 @@
         background: white;
         border-radius: 12px;
         padding: 10px;
-        border: 3px solid #ebbecb; /* 🔴 Daha kalın pembe çerçeve */
+        border: 3px solid #ebbecb;
         box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         overflow-y: auto;
         max-height: 70vh;
@@ -139,15 +138,12 @@
           width: 92vw;
           max-width: 300px;
         }
-
         .bestseller-product-wrapper {
           width: 47%;
         }
-
         .bestseller-product-title {
           font-size: 11px;
         }
-
         .bestseller-price-wrapper {
           font-size: 12px;
         }
@@ -176,15 +172,15 @@
             (p) => `
           <div class="bestseller-product-wrapper">
             <div class="bestseller-product-img">
-              <a href="${p.url}">
+              <a href="${p.product_url}">
                 <img class="bestseller-base-image" src="${p.image_url}" alt="${p.name}" />
                 <img class="bestseller-hover-image" src="${p.hover_image_url || p.image_url}" alt="${p.name}" />
               </a>
             </div>
             <div class="bestseller-product-detail">
-              <a href="${p.url}" class="bestseller-product-title">${p.name}</a>
+              <a href="${p.product_url}" class="bestseller-product-title">${p.name}</a>
               <p class="bestseller-price-wrapper">${parseFloat(p.price).toLocaleString("tr-TR")} TL</p>
-              <a href="${p.url}" class="bestseller-discover-button">Keşfet</a>
+              <a href="${p.product_url}" class="bestseller-discover-button">Keşfet</a>
             </div>
           </div>`
           )
