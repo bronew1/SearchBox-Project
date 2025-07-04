@@ -73,22 +73,39 @@ def upload_xml(request):
 
 
 @csrf_exempt
-def widget_products(request):
+def widget_products(request, id=None):
     if request.method == "GET":
-        products = WidgetProduct.objects.all()
-        data = []
-        for p in products:
-            data.append({
-                "id": p.id,
-                "name": p.name,
-                "image_url": p.image_url,
-                "hover_image_url": p.hover_image_url,
-                "price": p.price,
-                "product_url": p.product_url,
-                "sku": p.sku,
-                "order": p.order,
-            })
-        return JsonResponse(data, safe=False)
+        if id:
+            try:
+                p = WidgetProduct.objects.get(id=id)
+                data = {
+                    "id": p.id,
+                    "name": p.name,
+                    "image_url": p.image_url,
+                    "hover_image_url": p.hover_image_url,
+                    "price": p.price,
+                    "product_url": p.product_url,
+                    "sku": p.sku,
+                    "order": p.order,
+                }
+                return JsonResponse(data)
+            except WidgetProduct.DoesNotExist:
+                return JsonResponse({"error": "Not found"}, status=404)
+        else:
+            products = WidgetProduct.objects.all()
+            data = []
+            for p in products:
+                data.append({
+                    "id": p.id,
+                    "name": p.name,
+                    "image_url": p.image_url,
+                    "hover_image_url": p.hover_image_url,
+                    "price": p.price,
+                    "product_url": p.product_url,
+                    "sku": p.sku,
+                    "order": p.order,
+                })
+            return JsonResponse(data, safe=False)
 
     elif request.method == "POST":
         data = json.loads(request.body)
@@ -117,13 +134,11 @@ def widget_products(request):
         return JsonResponse({"status": "success"})
 
     elif request.method == "DELETE":
-        data = json.loads(request.body)
-        p = WidgetProduct.objects.get(id=data.get("id"))
+        p = WidgetProduct.objects.get(id=id)
         p.delete()
         return JsonResponse({"status": "deleted"})
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
-
 
 
 
