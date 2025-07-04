@@ -17,3 +17,17 @@ def create_campaign(request):
         )
         return JsonResponse({"status": "success", "id": campaign.id})
     return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+def list_campaigns(request):
+    campaigns = EmailCampaign.objects.all().order_by('-created_at')  # en son eklenen en üstte
+    data = []
+    for campaign in campaigns:
+        data.append({
+            "id": campaign.id,
+            "title": campaign.title,
+            "subject": campaign.subject,
+            "segment": campaign.segment,
+            "delay_days": campaign.delay_days,
+            "created_at": campaign.created_at.strftime("%Y-%m-%d %H:%M"),
+        })
+    return JsonResponse(data, safe=False)
