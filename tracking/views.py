@@ -19,6 +19,9 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.views.decorators.http import require_GET
 from django.core.serializers import serialize
+from collections import Counter
+from products.models import Product  # kendi ürün modelini buraya import et
+from django.views.decorators.http import require_GET
 
 
 @csrf_exempt
@@ -248,4 +251,38 @@ def most_viewed_products(request):
 
     # Sonuçları JSON formatına çevir
     data = [{"product_id": entry["product_id"], "count": entry["count"]} for entry in queryset]
+    return JsonResponse(data, safe=False)
+
+
+
+@require_GET
+def also_viewed_products(request, product_id):
+    # Bu ürünü görüntüleyen kullanıcılar
+    viewers = UserEvent.objects.filter(
+        product_id=product_id,
+        event_name="view_item"
+    ).values_list("user_id", flat=True).distinct()
+
+    # Bu kullanıcıların baktığı diğer ürünler
+    other_views = UserEvent.objects.filter(
+        user_id__in=viewers,
+        event_name="view_item"
+    ).exclude(product_id=product_id)
+
+    # Say
+    counter = Counter(other_views.values_list("product_id", flat=True))
+    most_common = counter.most_common(6)
+
+    # Ürünleri getir
+    product_ids = [pid for pid, _ in most_common]
+    products = Product.objects.filter(external_id__in=product_ids)  # 👈 kendi modelindeki alan adı
+
+    data = []
+    for p in products:
+        data.append({
+            "id": p.external_id,
+            "name": p.name,
+            "image_url": p.image_url,
+            "price": p.price,
+        })
     return JsonResponse(data, safe=False)
