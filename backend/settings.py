@@ -178,6 +178,9 @@ CORS_ALLOW_CREDENTIALS = True
 
 # settings.py
 
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
+
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp-relay.brevo.com"
 EMAIL_PORT = 587
