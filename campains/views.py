@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 from .models import EmailCampaign
 import json
+from django.views.decorators.http import require_http_methods
+
 
 @csrf_exempt
 def create_campaign(request):
@@ -53,8 +55,14 @@ def campaign_detail(request, pk):
     }
     return JsonResponse(data)
 
+
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
 def delete_campaign(request, pk):
-    campaign = get_object_or_404(EmailCampaign, pk=pk)
-    campaign.delete()
-    messages.success(request, "Kampanya başarıyla silindi.")
-    return redirect("campaign_list")  # kampanya listeleme view’in url name’i
+    try:
+        campaign = EmailCampaign.objects.get(pk=pk)
+        campaign.delete()
+        return JsonResponse({"status": "success", "message": "Kampanya başarıyla silindi."})
+    except EmailCampaign.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Kampanya bulunamadı."}, status=404)
