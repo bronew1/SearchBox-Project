@@ -1,23 +1,35 @@
-from celery import shared_task
-from django.utils import timezone
-from datetime import timedelta
-from .models import EmailCampaign
-from tracking.models import UserEvent  # Event modelini senin kullanıma göre düzenle
+# apps/campains/tasks.py
+
 from .brevo_utils import send_brevo_email
+from tracking.models import UserEvent
+from campains.models import Campaign
+import re
 
-@shared_task
+def is_valid_email(email):
+    """Basit email doğrulama"""
+    return bool(re.match(r"[^@]+@[^@]+\.[^@]+", email))
+
 def process_email_campaigns():
-    campaigns = EmailCampaign.objects.filter(active=True)
-    for campaign in campaigns:
-        if campaign.segment == "cart":
-            users = UserEvent.objects.filter(event_name="add_to_cart")
-        elif campaign.segment == "viewers":
-            users = UserEvent.objects.filter(event_name="view_item")
-        elif campaign.segment == "members":
-            users = UserEvent.objects.filter(event_name="login")
-        else:
-            users = []
+    campaigns = Campaign.objects.all()
 
-        for user_event in users:
-            if user_event.timestamp <= timezone.now() - timedelta(days=campaign.send_after_days):
-                send_brevo_email(campaign.subject, campaign.html_content, user_event.user_id)
+    for campaign in campaigns:
+        # Segment kontrolü eklemek istersen buraya koyabilirsin
+        users = UserEvent.objects.all().distinct("user_id")
+
+        for user in users:
+            user_email = user.user_id.strip()
+
+            if not is_valid_email(user_email):
+                print(f"❌ Geçersiz, atlanıyor: {user_email}")
+                continue
+
+            # Brevo email gönder
+            try:
+                send_brevo_email(
+                    subject=campaign.subject,
+                    html_content=campaign.html_content,
+                    to_email=user_email,
+                )
+                print(f"✅ Email gönderildi: {user_email}")
+            except Exception as e:
+                print(f"❌ Gönderim hatası: {e} - {user_email}")
