@@ -15,7 +15,7 @@ def send_brevo_email(subject, html_content, to_email):
         to=[{"email": to_email}],
         subject=subject,
         html_content=html_content,
-        sender={"name": "Senin Marka", "email": "info@domain.com"},
+        sender={"name": "💎Sina Pırlanta💎", "email": "info@domain.com"},
     )
 
     api_instance.send_transac_email(send_smtp_email)

@@ -1,4 +1,6 @@
+from pyexpat.errors import messages
 from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 from .models import EmailCampaign
 import json
@@ -50,3 +52,9 @@ def campaign_detail(request, pk):
         "created_at": campaign.created_at.strftime("%Y-%m-%d %H:%M"),
     }
     return JsonResponse(data)
+
+def delete_campaign(request, pk):
+    campaign = get_object_or_404(EmailCampaign, pk=pk)
+    campaign.delete()
+    messages.success(request, "Kampanya başarıyla silindi.")
+    return redirect("campaign_list")  # kampanya listeleme view’in url name’i
