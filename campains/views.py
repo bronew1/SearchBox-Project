@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import EmailCampaign
 import json
@@ -31,3 +31,22 @@ def list_campaigns(request):
             "created_at": campaign.created_at.strftime("%Y-%m-%d %H:%M"),
         })
     return JsonResponse(data, safe=False)
+
+
+
+def campaign_detail(request, pk):
+    try:
+        campaign = EmailCampaign.objects.get(pk=pk)
+    except EmailCampaign.DoesNotExist:
+        raise Http404("Kampanya bulunamadı.")
+
+    data = {
+        "id": campaign.id,
+        "title": campaign.title,
+        "subject": campaign.subject,
+        "segment": campaign.segment,
+        "send_after_days": campaign.send_after_days,
+        "html_content": campaign.html_content,
+        "created_at": campaign.created_at.strftime("%Y-%m-%d %H:%M"),
+    }
+    return JsonResponse(data)
