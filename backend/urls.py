@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 from products.views import widget_products
-from tracking.views import daily_add_to_cart_counts, dashboard_stats, most_viewed_products, save_subscription, user_events_list  # ✔️ Doğru
+from tracking.views import also_viewed_products, daily_add_to_cart_counts, dashboard_stats, most_viewed_products, save_subscription, user_events_list  # ✔️ Doğru
 from tracking.views import cart_count, public_vapid_key, service_worker, track_event
 from subscriptions.views import subscribe 
 from django.conf import settings
@@ -32,13 +32,15 @@ urlpatterns = [
     path("api/widget-products/", widget_products, name="widget-products"),
     path("widget-products/<int:id>/", widget_products, name="widget-products-detail"),
     path("api/campains/", include("campains.urls")),
+    path("api/also-viewed/<str:product_id>/", also_viewed_products, name="also_viewed_products"),
+]
 
 
     
    # path("api/", include("products.urls")),
     
     
-]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
