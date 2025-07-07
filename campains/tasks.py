@@ -2,7 +2,8 @@
 
 from .brevo_utils import send_brevo_email
 from tracking.models import UserEvent
-from campains.models import Campaign
+from campains.models import EmailCampaign
+
 import re
 
 def is_valid_email(email):
@@ -10,7 +11,7 @@ def is_valid_email(email):
     return bool(re.match(r"[^@]+@[^@]+\.[^@]+", email))
 
 def process_email_campaigns():
-    campaigns = Campaign.objects.all()
+    campaigns = EmailCampaign.objects.all()
 
     for campaign in campaigns:
         # Segment kontrolü eklemek istersen buraya koyabilirsin
