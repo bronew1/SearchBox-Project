@@ -12,10 +12,11 @@ def send_brevo_email(subject, html_content, to_email):
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        to=[{"email": to_email}],
-        subject=subject,
-        html_content=html_content,
-        sender={"name": "💎Sina Pırlanta💎", "email": "info@domain.com"},
-    )
+    to=[{"email": to_email}],
+    subject=subject,
+    html_content=html_content,
+    sender={"name": "💎Sina Pırlanta💎", "email": "no-reply@sinapirlanta.email"},
+)
+
 
     api_instance.send_transac_email(send_smtp_email)
