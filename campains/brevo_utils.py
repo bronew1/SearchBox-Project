@@ -9,7 +9,7 @@ def send_brevo_email(subject, html_content, to_email):
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
         to=[{"email": to_email}],
-        sender={"email": "no-reply@seninsite.com", "name": "Senin Markan"},
+        sender={"email": "no-reply@sinapirlanta.email", "name": "Senin Markan"},
         subject=subject,
         html_content=html_content,
     )
