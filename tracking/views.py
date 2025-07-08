@@ -190,10 +190,17 @@ def user_events_list(request):
             "product_id": event.product_id,
             "user_id": event.user_id,
             "event_value": event.event_value,
+            "source": event.source if hasattr(event, 'source') else None,
+            "utm_source": event.utm_source,
+            "utm_medium": event.utm_medium,
+            "utm_campaign": event.utm_campaign,
+            "utm_term": event.utm_term,
+            "utm_content": event.utm_content,
             "timestamp": event.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
         })
 
     return JsonResponse(data, safe=False)
+
 
 
 def dashboard_stats(request):
