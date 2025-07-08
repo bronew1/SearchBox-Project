@@ -33,13 +33,14 @@ def track_event(request):
             product_id = data.get("product_id")
             event_value = data.get("event_value")
             user_id = data.get("user_id")
+            source = data.get("source", "organic")  # ✅ Yeni alan
 
-            # UserEvent olarak kaydet
             UserEvent.objects.create(
                 event_name=event_name.strip(),
                 product_id=product_id.strip() if product_id else None,
                 event_value=event_value,
-                user_id=user_id.strip()
+                user_id=user_id.strip(),
+                source=source.strip()
             )
 
             # Sepete ekleme eventi
@@ -57,7 +58,7 @@ def track_event(request):
                     is_purchased=False
                 ).update(is_purchased=True)
 
-            print(f"📦 Etkinlik: {event_name}, Ürün: {product_id}, Değer: {event_value}, Kullanıcı: {user_id}")
+            print(f"📦 Etkinlik: {event_name}, Ürün: {product_id}, Kullanıcı: {user_id}, Kaynak: {source}")
             return JsonResponse({"status": "ok"})
 
         except Exception as e:

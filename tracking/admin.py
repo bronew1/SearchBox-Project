@@ -6,8 +6,9 @@ from .models import CartAbandonment, PushSubscription, UserEvent
 
 @admin.register(UserEvent)
 class UserEventAdmin(admin.ModelAdmin):
-    list_display = ["event_name", "product_id", "user_id", "timestamp"]
-    list_filter = ["event_name", "timestamp"]
+    list_display = ["event_name", "product_id", "user_id", "source", "timestamp"]
+    list_filter = ["event_name", "source", "timestamp"]
+
 
 @admin.register(CartAbandonment)
 class CartAbandonmentAdmin(admin.ModelAdmin):
