@@ -20,13 +20,15 @@ class UserEvent(models.Model):
     event_name = models.CharField(max_length=50, choices=EVENT_CHOICES)
     product_id = models.CharField(max_length=100)
     user_id = models.CharField(max_length=100)
-    source = models.CharField(max_length=50, choices=SOURCE_CHOICES, default='organic')  # ✅ EKLENDİ
+    source = models.CharField(max_length=50, choices=SOURCE_CHOICES, default='organic')  # ✅ Eklendi
+    utm_source = models.CharField(max_length=100, null=True, blank=True)
+    utm_medium = models.CharField(max_length=100, null=True, blank=True)
+    utm_campaign = models.CharField(max_length=100, null=True, blank=True)
     event_value = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.timestamp} - {self.event_name} - {self.product_id} - {self.user_id} - {self.source}"
-
 
 class CartAbandonment(models.Model):
     user_id = models.CharField(max_length=255)
