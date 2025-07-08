@@ -36,9 +36,11 @@ def track_event(request):
             user_id = data.get("user_id")
             source = data.get("source", "organic")
 
-            utm_source = data.get("utm_source")
-            utm_medium = data.get("utm_medium")
-            utm_campaign = data.get("utm_campaign")
+            utm_source = data.get("utm_source") or None
+            utm_medium = data.get("utm_medium") or None
+            utm_campaign = data.get("utm_campaign") or None
+            utm_term = data.get("utm_term") or None
+            utm_content = data.get("utm_content") or None
 
             # UserEvent kaydet
             UserEvent.objects.create(
@@ -46,10 +48,11 @@ def track_event(request):
                 product_id=product_id.strip() if product_id else None,
                 event_value=event_value,
                 user_id=user_id.strip(),
-                source=source.strip(),
                 utm_source=utm_source,
                 utm_medium=utm_medium,
                 utm_campaign=utm_campaign,
+                utm_term=utm_term,
+                utm_content=utm_content,
             )
 
             # Sepete ekleme eventi
@@ -67,7 +70,7 @@ def track_event(request):
                     is_purchased=False
                 ).update(is_purchased=True)
 
-            print(f"📦 Event: {event_name}, Ürün: {product_id}, Kullanıcı: {user_id}, Source: {source}, UTM: {utm_source}, {utm_medium}, {utm_campaign}")
+            print(f"📦 Event: {event_name}, Ürün: {product_id}, Kullanıcı: {user_id}, Source: {source}, UTM: {utm_source}, {utm_medium}, {utm_campaign}, {utm_term}, {utm_content}")
             return JsonResponse({"status": "ok"})
 
         except Exception as e:
