@@ -15,7 +15,10 @@ class UserEvent(models.Model):
     event_value = models.TextField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    # 🔥 UTM alanları
+    # 🔥 Kaynak (ads, organic vs.)
+    source = models.CharField(max_length=100, null=True, blank=True)
+
+    # UTM alanları
     utm_source = models.CharField(max_length=255, null=True, blank=True)
     utm_medium = models.CharField(max_length=255, null=True, blank=True)
     utm_campaign = models.CharField(max_length=255, null=True, blank=True)
@@ -24,6 +27,7 @@ class UserEvent(models.Model):
 
     def __str__(self):
         return f"{self.timestamp} - {self.event_name} - {self.product_id} - {self.user_id}"
+
 
 class CartAbandonment(models.Model):
     user_id = models.CharField(max_length=255)
