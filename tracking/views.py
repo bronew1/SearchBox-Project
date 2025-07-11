@@ -42,12 +42,13 @@ def track_event(request):
             utm_term = data.get("utm_term") or None
             utm_content = data.get("utm_content") or None
 
-            # UserEvent kaydet
+            # 👇 BURASI: UserEvent kaydet
             UserEvent.objects.create(
                 event_name=event_name.strip(),
                 product_id=product_id.strip() if product_id else None,
                 event_value=event_value,
                 user_id=user_id.strip(),
+                source=source.strip(),      # ✅ BUNU EKLE
                 utm_source=utm_source,
                 utm_medium=utm_medium,
                 utm_campaign=utm_campaign,
@@ -77,6 +78,7 @@ def track_event(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     return JsonResponse({"error": "Invalid request"}, status=405)
+
 
 
 def cart_count(request, product_id):
