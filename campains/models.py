@@ -20,6 +20,8 @@ class EmailCampaign(models.Model):
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_template = models.BooleanField(default=False)
+    design_json = models.JSONField(null=True, blank=True)  # 💡 yeni alan
+
 
 
     # 💡 Yeni alanlar
