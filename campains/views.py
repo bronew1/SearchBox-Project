@@ -17,22 +17,24 @@ def create_campaign(request):
 
         price_limit = data.get("price_limit")
         price_condition = data.get("price_condition")
-        is_template = data.get("is_template", False)  # ✅ Şablon mu kontrolü
+        is_template = data.get("is_template", False)
+        design_json = data.get("design_json")  # ✅ YENİ
 
         campaign = EmailCampaign.objects.create(
             title=data["title"],
-            subject=data.get("subject", ""),            # Şablonda opsiyonel
+            subject=data.get("subject", ""),
             html_content=data["html_content"],
-            segment=data.get("segment", ""),            # Şablonda opsiyonel
-            send_after_days=int(data.get("send_after_days", 0)),  # Şablon için default 0
+            design_json=design_json,  # ✅ EKLENDİ
+            segment=data.get("segment", ""),
+            send_after_days=int(data.get("send_after_days", 0)),
             active=True,
             price_limit=float(price_limit) if price_limit else None,
             price_condition=price_condition if price_condition else None,
-            is_template=is_template,                   # ✅ Mutlaka buraya ekleniyor
+            is_template=is_template,
         )
         return JsonResponse({"status": "success", "id": campaign.id})
-    
     return JsonResponse({"error": "Only POST allowed"}, status=405)
+
 
 
 

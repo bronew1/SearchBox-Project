@@ -13,15 +13,17 @@ PRICE_CONDITION_CHOICES = [
 
 class EmailCampaign(models.Model):
     title = models.CharField(max_length=255)
-    subject = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255, blank=True)
     html_content = models.TextField()
-    segment = models.CharField(max_length=50, choices=SEGMENT_CHOICES)
+    design_json = models.JSONField(null=True, blank=True)  # ✅ YENİ
+    segment = models.CharField(max_length=50, blank=True)
     send_after_days = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_template = models.BooleanField(default=False)
-    design_json = models.JSONField(null=True, blank=True)  # 💡 yeni alan
 
+    def __str__(self):
+        return self.title
 
 
     # 💡 Yeni alanlar
