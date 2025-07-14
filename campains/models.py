@@ -19,6 +19,8 @@ class EmailCampaign(models.Model):
     send_after_days = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_template = models.BooleanField(default=False)
+
 
     # 💡 Yeni alanlar
     price_limit = models.FloatField(null=True, blank=True)

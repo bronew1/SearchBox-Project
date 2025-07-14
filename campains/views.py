@@ -33,7 +33,18 @@ def create_campaign(request):
 
 
 def list_campaigns(request):
+    # Query parametre olarak "is_template" al
+    is_template = request.GET.get("is_template")
+
     campaigns = EmailCampaign.objects.all().order_by('-created_at')
+
+    # Eğer ?is_template=true gelirse, sadece şablonları filtrele
+    if is_template == "true":
+        campaigns = campaigns.filter(is_template=True)
+    elif is_template == "false":
+        campaigns = campaigns.filter(is_template=False)
+    # Eğer parametre yoksa, tüm kampanyaları getir
+
     data = []
     for campaign in campaigns:
         data.append({
@@ -41,7 +52,7 @@ def list_campaigns(request):
             "title": campaign.title,
             "subject": campaign.subject,
             "segment": campaign.segment,
-            "send_after_days": campaign.send_after_days,  # ✅ düzeltildi
+            "send_after_days": campaign.send_after_days,
             "created_at": campaign.created_at.strftime("%Y-%m-%d %H:%M"),
         })
     return JsonResponse(data, safe=False)
