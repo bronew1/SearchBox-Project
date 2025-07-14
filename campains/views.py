@@ -14,9 +14,14 @@ from django.views.decorators.http import require_http_methods
 def create_campaign(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        
+
         price_limit = data.get("price_limit")
         price_condition = data.get("price_condition")
+        is_template = data.get("is_template", False)
+
+        # True/False dönüştür
+        if isinstance(is_template, str):
+            is_template = is_template.lower() == "true"
 
         campaign = EmailCampaign.objects.create(
             title=data["title"],
@@ -27,9 +32,11 @@ def create_campaign(request):
             active=True,
             price_limit=float(price_limit) if price_limit else None,
             price_condition=price_condition if price_condition else None,
+            is_template=is_template,  # ✅ eklenen alan
         )
         return JsonResponse({"status": "success", "id": campaign.id})
     return JsonResponse({"error": "Only POST allowed"}, status=405)
+
 
 
 def list_campaigns(request):
