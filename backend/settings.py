@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'campains',
     'rest_framework',
     'subscriptions',
+    'webPush',
+
   
     
 ]

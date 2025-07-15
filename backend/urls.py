@@ -31,6 +31,8 @@ urlpatterns = [
     path("widget-products/<int:id>/", widget_products, name="widget-products-detail"),
     path("api/campains/", include("campains.urls")),
     path("api/also-viewed/<str:product_id>/", also_viewed_products, name="also_viewed_products"),
+    path("webpush/", include("webpush.urls")),
+
 ]
 
 
