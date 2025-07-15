@@ -4,11 +4,10 @@ import json
 from django.utils import timezone
 from datetime import timedelta
 from backend import settings
-from tracking.models import CartAbandonment, PushSubscription, UserEvent
+from tracking.models import CartAbandonment, UserEvent
 from django.db.models.functions import TruncDate
 from django.db.models import Count
 from django.utils.timezone import now
-from pywebpush import webpush
 from django.http import FileResponse
 import os
 from django.db.models.functions import TruncDate
@@ -95,54 +94,12 @@ def cart_count(request, product_id):
 
 
 
-def send_push(subscription, message):
-    webpush(
-        subscription_info={
-            "endpoint": subscription.endpoint,
-            "keys": {
-                "p256dh": subscription.keys_p256dh,
-                "auth": subscription.keys_auth
-            }
-        },
-        data=message,
-        vapid_private_key=settings.VAPID_PRIVATE_KEY,
-        vapid_claims={"sub": "mailto:berk.oztug@sinapirlanta.com"}
-    )
 
-
-def public_vapid_key(request):
-    return HttpResponse(settings.VAPID_PUBLIC_KEY)
 
 
 def service_worker(request):
     filepath = os.path.join(settings.BASE_DIR, 'static', 'service-worker.js')
     return FileResponse(open(filepath, 'rb'), content_type='application/javascript')
-
-@csrf_exempt
-def save_subscription(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        subscription = data.get("subscription", {})
-        endpoint = subscription.get("endpoint")
-        keys = subscription.get("keys", {})
-        auth = keys.get("auth")
-        p256dh = keys.get("p256dh")
-        user_id = data.get("user_id") or request.COOKIES.get("user_id")
-
-        if endpoint and auth and p256dh:
-            PushSubscription.objects.update_or_create(
-                endpoint=endpoint,
-                defaults={
-                    "keys_auth": auth,
-                    "keys_p256dh": p256dh,
-                    "user_id": user_id
-                }
-            )
-            return JsonResponse({"status": "success"})
-        else:
-            return JsonResponse({"status": "missing data"}, status=400)
-
-    return JsonResponse({"error": "invalid method"}, status=405)
 
 
 

@@ -38,11 +38,5 @@ class CartAbandonment(models.Model):
 
 
 
-class PushSubscription(models.Model):
-    endpoint = models.TextField()
-    keys_auth = models.CharField(max_length=256)
-    keys_p256dh = models.CharField(max_length=256)
-    user_id = models.CharField(max_length=255, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
