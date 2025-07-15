@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 from products.views import widget_products
-from tracking.views import also_viewed_products, daily_add_to_cart_counts, dashboard_stats, most_viewed_products, save_subscription, user_events_list  # ✔️ Doğru
-from tracking.views import cart_count, public_vapid_key, service_worker, track_event
+from tracking.views import also_viewed_products, daily_add_to_cart_counts, dashboard_stats, most_viewed_products, user_events_list  # ✔️ Doğru
+from tracking.views import cart_count, service_worker, track_event
 from subscriptions.views import subscribe 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -22,8 +22,6 @@ urlpatterns = [
     path("api/track-event/", track_event, name="track_event"),
     path('api/subscribe/', include('subscriptions.urls')),
     path("api/cart-count/<str:product_id>/", cart_count),
-    path("api/public-key/", public_vapid_key),
-    path("api/save-subscription/", save_subscription),
     path('service-worker.js', service_worker),
     path("api/daily-add-to-cart/", daily_add_to_cart_counts, name="daily_add_to_cart"),
     path("api/user-events/", user_events_list, name="user_events_list"),
