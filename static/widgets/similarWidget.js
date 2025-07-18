@@ -93,7 +93,15 @@
           }
 
           container.appendChild(grid);
-          document.body.appendChild(container);
+
+          // Konum: .product-detail elementinden sonra ekle
+          var target = document.querySelector(".product-detail");
+          if (target) {
+            target.insertAdjacentElement("afterend", container);
+          } else {
+            document.body.appendChild(container); // fallback
+          }
+
         } catch (e) {
           console.error("Benzer ürünler parse edilemedi:", e);
         }
