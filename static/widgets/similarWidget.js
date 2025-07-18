@@ -1,8 +1,11 @@
 (function () {
+  var checkCount = 0;
   var interval = setInterval(function () {
+    checkCount++;
+    if (checkCount > 30) clearInterval(interval); // 9 saniye sonra dur
+
     if (!window.dataLayer || !window.dataLayer.length) return;
 
-    // dataLayer içinde product_id içeren objeyi bul
     var productEvent = window.dataLayer.find(function (event) {
       return event.event === "view_item" && event.product_id;
     });
@@ -12,7 +15,7 @@
     var sku = productEvent.product_id;
     if (!sku) return;
 
-    clearInterval(interval); // Ürün kodu bulunduysa kontrolü durdur
+    clearInterval(interval);
 
     var apiUrl = "https://searchprojectdemo.com/api/recommendations/similar/" + sku + "/";
 
@@ -23,10 +26,8 @@
         try {
           var data = JSON.parse(xhr.responseText);
           var products = data.products || [];
-
           if (products.length === 0) return;
 
-          // CSS
           var style = document.createElement("style");
           style.innerHTML = `
             #similar-products-slider {
@@ -63,7 +64,6 @@
           `;
           document.head.appendChild(style);
 
-          // HTML
           var container = document.createElement("div");
           container.id = "similar-products-slider";
           container.innerHTML = "<h2>Benzer Ürünler</h2>";
@@ -75,7 +75,6 @@
             var p = products[j];
             var card = document.createElement("div");
             card.className = "similar-product-card";
-
             card.innerHTML =
               '<a href="' +
               p.url +
@@ -88,25 +87,37 @@
               '</div><div class="price">' +
               p.price +
               ' TL</div></a>';
-
             grid.appendChild(card);
           }
 
           container.appendChild(grid);
 
-          // Konum: .product-detail elementinden sonra ekle
-          var target = document.querySelector(".product-detail");
-          if (target) {
-            target.insertAdjacentElement("afterend", container);
-          } else {
-            document.body.appendChild(container); // fallback
+          // === Ürün detay alanını bul ve oraya ekle ===
+          var targets = [
+            ".product-detail",
+            ".product-area",
+            ".urun-detay",
+            ".product-container",
+            ".product-wrapper"
+          ];
+          var inserted = false;
+          for (var i = 0; i < targets.length; i++) {
+            var el = document.querySelector(targets[i]);
+            if (el) {
+              el.appendChild(container);
+              inserted = true;
+              break;
+            }
           }
 
+          if (!inserted) {
+            document.body.appendChild(container); // fallback
+          }
         } catch (e) {
           console.error("Benzer ürünler parse edilemedi:", e);
         }
       }
     };
     xhr.send();
-  }, 300); // Her 300ms'de bir dataLayer kontrolü
+  }, 300);
 })();
