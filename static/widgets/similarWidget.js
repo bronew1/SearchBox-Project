@@ -1,80 +1,55 @@
 (function () {
   console.log("👀 Benzer ürün widget başlatıldı...");
 
-  function startWidget(productId) {
-    if (!productId) {
-      console.error("❌ product_id alınamadı, widget iptal edildi.");
+  window.addEventListener("message", async (event) => {
+    if (!event?.data || event.data.event_name !== "view_item") return;
+
+    const { product_id } = event.data;
+
+    if (!product_id) {
+      console.error("❌ product_id bulunamadı, widget durduruldu.");
       return;
     }
 
-    console.log("🟢 Widget başlatılıyor, product_id:", productId);
+    console.log("✅ Widget başlatılıyor, product_id:", product_id);
 
-    fetch(`https://searchprojectdemo.com/api/similar/${productId}/`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data || data.length === 0) {
-          console.log("🟡 Benzer ürün bulunamadı.");
-          return;
-        }
+    const widgetContainer = document.createElement("div");
+    widgetContainer.id = "similar-products-widget";
+    widgetContainer.style.border = "1px solid #ccc";
+    widgetContainer.style.padding = "10px";
+    widgetContainer.innerText = "⏳ Yükleniyor...";
 
-        const container = document.createElement("div");
-        container.style.position = "fixed";
-        container.style.bottom = "20px";
-        container.style.left = "20px";
-        container.style.zIndex = "9999";
-        container.style.background = "#fff";
-        container.style.border = "1px solid #ccc";
-        container.style.padding = "10px";
-        container.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
-        container.innerHTML = "<h4>Benzer Ürünler</h4>";
+    document.body.appendChild(widgetContainer);
 
-        data.forEach(item => {
-          const el = document.createElement("div");
-          el.innerHTML = `
-            <a href="/product/${item.id}" target="_blank" style="display:block;margin-bottom:8px;">
-              <img src="${item.image_url}" alt="${item.name}" style="width:80px;height:auto;">
-              <div>${item.name} - ${item.price} TL</div>
-            </a>
-          `;
-          container.appendChild(el);
-        });
+    try {
+      const res = await fetch(`https://searchprojectdemo.com/api/recommendations/similar/${product_id}/`);
+      const data = await res.json();
 
-        document.body.appendChild(container);
-      })
-      .catch(err => {
-        console.error("❌ Widget API hatası:", err);
+      if (!Array.isArray(data) || data.length === 0) {
+        widgetContainer.innerText = "Benzer ürün bulunamadı.";
+        return;
+      }
+
+      widgetContainer.innerHTML = "<h3>Benzer Ürünler</h3>";
+
+      data.forEach((item) => {
+        const card = document.createElement("div");
+        card.style.marginBottom = "10px";
+
+        card.innerHTML = `
+          <a href="${item.url}" target="_blank" style="text-decoration: none; color: inherit;">
+            <img src="${item.image}" alt="${item.name}" width="100" />
+            <p><strong>${item.name}</strong></p>
+            <p>${item.price} TL</p>
+          </a>
+        `;
+
+        widgetContainer.appendChild(card);
       });
-  }
 
-  function listenForProductIdFromEvents() {
-    const originalPush = window.dataLayer?.push;
-
-    if (!originalPush) {
-      console.error("❌ dataLayer bulunamadı.");
-      return;
+    } catch (err) {
+      console.error("❌ Widget verisi alınamadı:", err);
+      widgetContainer.innerText = "Bir hata oluştu.";
     }
-
-    window.dataLayer.push = function () {
-      const args = Array.from(arguments);
-      args.forEach((arg) => {
-        if (arg.event === "view_item" && arg.product_id) {
-          console.log("📦 product_id bulundu:", arg.product_id);
-          startWidget(arg.product_id);
-        }
-      });
-      return originalPush.apply(this, arguments);
-    };
-
-    // Eğer dataLayer zaten doluysa geçmiş eventleri tara
-    if (Array.isArray(window.dataLayer)) {
-      window.dataLayer.forEach(event => {
-        if (event.event === "view_item" && event.product_id) {
-          console.log("📦 Önceki eventten product_id:", event.product_id);
-          startWidget(event.product_id);
-        }
-      });
-    }
-  }
-
-  listenForProductIdFromEvents();
+  });
 })();
