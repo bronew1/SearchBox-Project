@@ -1,19 +1,41 @@
 (function () {
+  console.log("📦 Benzer ürün widget başlatıldı...");
   var checkCount = 0;
   var interval = setInterval(function () {
     checkCount++;
-    if (checkCount > 30) clearInterval(interval); // 9 saniye sonra dur
+    if (checkCount > 30) clearInterval(interval);
 
-    if (!window.dataLayer || !window.dataLayer.length) return;
+    if (!window.dataLayer || !window.dataLayer.length) {
+      console.log("❌ dataLayer henüz yok");
+      return;
+    }
 
     var productEvent = window.dataLayer.find(function (event) {
       return event.event === "view_item" && event.product_id;
     });
 
-    if (!productEvent) return;
+    if (!productEvent) {
+      console.log("⚠️ view_item eventi bulunamadı");
+      return;
+    }
 
     var sku = productEvent.product_id;
-    if (!sku) return;
+
+    // fallback: DOM’dan al
+    if (!sku) {
+      var skuText = document.querySelector("p.product-info-sku")?.textContent;
+      if (skuText?.includes("Ürün Kodu:")) {
+        sku = skuText.split("Ürün Kodu:")[1].trim();
+        console.log("🛠️ SKU fallback ile bulundu:", sku);
+      }
+    }
+
+    if (!sku) {
+      console.log("❌ SKU yine bulunamadı");
+      return;
+    }
+
+    console.log("✅ Ürün kodu bulundu:", sku);
 
     clearInterval(interval);
 
@@ -26,7 +48,12 @@
         try {
           var data = JSON.parse(xhr.responseText);
           var products = data.products || [];
-          if (products.length === 0) return;
+          console.log("🧠 Benzer ürünler getirildi:", products);
+
+          if (products.length === 0) {
+            console.log("⚠️ Benzer ürün bulunamadı");
+            return;
+          }
 
           var style = document.createElement("style");
           style.innerHTML = `
@@ -92,7 +119,6 @@
 
           container.appendChild(grid);
 
-          // === Ürün detay alanını bul ve oraya ekle ===
           var targets = [
             ".product-detail",
             ".product-area",
@@ -111,7 +137,7 @@
           }
 
           if (!inserted) {
-            document.body.appendChild(container); // fallback
+            document.body.appendChild(container);
           }
         } catch (e) {
           console.error("Benzer ürünler parse edilemedi:", e);
