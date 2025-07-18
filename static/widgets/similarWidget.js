@@ -1,27 +1,9 @@
 (function () {
-  console.log("🔁 Benzer ürün widget başlatıldı...");
-
-  function getProductId() {
-    try {
-      // JSON-LD'den al
-      const script = document.querySelector('script[type="application/ld+json"]');
-      const json = JSON.parse(script?.innerText || "{}");
-
-      if (json["@graph"] && Array.isArray(json["@graph"])) {
-        const graphItem = json["@graph"].find(item => item.sku);
-        return graphItem?.sku || null;
-      }
-
-      return json.sku || null;
-    } catch (e) {
-      console.warn("⚠️ JSON-LD parse hatası:", e);
-      return null;
-    }
-  }
+  console.log("👀 Benzer ürün widget başlatıldı...");
 
   function startWidget(productId) {
     if (!productId) {
-      console.error("❌ product_id bulunamadı, widget durduruldu.");
+      console.error("❌ product_id alınamadı, widget iptal edildi.");
       return;
     }
 
@@ -35,7 +17,6 @@
           return;
         }
 
-        // 👇 Basit örnek UI - kendine göre geliştir
         const container = document.createElement("div");
         container.style.position = "fixed";
         container.style.bottom = "20px";
@@ -61,22 +42,39 @@
         document.body.appendChild(container);
       })
       .catch(err => {
-        console.error("❌ Widget verisi alınamadı:", err);
+        console.error("❌ Widget API hatası:", err);
       });
   }
 
-  function waitForProductIdAndStart(retries = 10) {
-    const productId = getProductId();
+  function listenForProductIdFromEvents() {
+    const originalPush = window.dataLayer?.push;
 
-    if (productId) {
-      startWidget(productId);
-    } else if (retries > 0) {
-      console.log("⏳ product_id henüz yok, yeniden denenecek...");
-      setTimeout(() => waitForProductIdAndStart(retries - 1), 500);
-    } else {
-      console.error("❌ product_id bulunamadı, widget durduruldu.");
+    if (!originalPush) {
+      console.error("❌ dataLayer bulunamadı.");
+      return;
+    }
+
+    window.dataLayer.push = function () {
+      const args = Array.from(arguments);
+      args.forEach((arg) => {
+        if (arg.event === "view_item" && arg.product_id) {
+          console.log("📦 product_id bulundu:", arg.product_id);
+          startWidget(arg.product_id);
+        }
+      });
+      return originalPush.apply(this, arguments);
+    };
+
+    // Eğer dataLayer zaten doluysa geçmiş eventleri tara
+    if (Array.isArray(window.dataLayer)) {
+      window.dataLayer.forEach(event => {
+        if (event.event === "view_item" && event.product_id) {
+          console.log("📦 Önceki eventten product_id:", event.product_id);
+          startWidget(event.product_id);
+        }
+      });
     }
   }
 
-  waitForProductIdAndStart();
+  listenForProductIdFromEvents();
 })();
