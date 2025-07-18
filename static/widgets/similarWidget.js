@@ -1,6 +1,5 @@
 (function () {
-  document.addEventListener("DOMContentLoaded", function () {
-    // Ürün kodunu <p> etiketlerinden bul
+  var interval = setInterval(function () {
     var pTags = document.getElementsByTagName("p");
     var sku = null;
 
@@ -13,6 +12,8 @@
     }
 
     if (!sku) return;
+
+    clearInterval(interval); // Ürün kodunu bulunca döngüyü durdur
 
     var apiUrl = "https://searchprojectdemo.com/api/recommendations/similar/" + sku + "/";
 
@@ -100,5 +101,5 @@
       }
     };
     xhr.send();
-  });
+  }, 500); // Her 500ms'de bir kontrol et
 })();
