@@ -9,7 +9,7 @@
 
     console.log("🟢 Widget başlatılıyor, product_id:", productId);
 
-    fetch(`https://searchprojectdemo.com/api/also-viewed-products/${productId}/`)
+    fetch(`https://searchprojectdemo.com/api/similar/${productId}/`)
       .then(res => res.json())
       .then(data => {
         if (!data || data.length === 0) {
