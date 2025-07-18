@@ -1,30 +1,45 @@
 (function () {
   console.log("📦 Benzer ürün widget başlatıldı...");
 
-  function extractSKUFromDOM() {
-    const el = document.querySelector("p.product-info-sku");
-    if (el?.textContent.includes("Ürün Kodu:")) {
-      const sku = el.textContent.split("Ürün Kodu:")[1].trim();
-      console.log("🛠️ SKU DOM’dan bulundu:", sku);
-      return sku;
+  var checkCount = 0;
+  var interval = setInterval(function () {
+    checkCount++;
+    if (checkCount > 30) {
+      console.log("⏰ Süre doldu, widget durduruldu.");
+      clearInterval(interval);
     }
-    return null;
-  }
 
-  function renderWidget(sku) {
+    const productEvent = window.dataLayer?.find(e => e.event === "view_item" && e.product_id);
+    let sku = productEvent?.product_id;
+
+    if (!sku) {
+      const skuText = document.querySelector("p.product-info-sku")?.textContent;
+      if (skuText?.includes("Ürün Kodu:")) {
+        sku = skuText.split("Ürün Kodu:")[1].trim();
+        console.log("🔁 Fallback ile SKU bulundu:", sku);
+      }
+    }
+
     if (!sku) {
       console.log("❌ SKU bulunamadı, widget durduruldu.");
       return;
     }
 
-    const apiUrl = "https://searchprojectdemo.com/api/recommendations/similar/" + sku + "/";
+    console.log("✅ SKU bulundu:", sku);
 
+    clearInterval(interval);
+
+    const apiUrl = "https://searchprojectdemo.com/api/recommendations/similar/" + sku + "/";
     fetch(apiUrl)
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         const products = data.products || [];
-        console.log("🧲 Benzer ürünler getirildi:", products);
-        if (products.length === 0) return;
+        console.log("🎯 Benzer ürünler geldi:", products);
+
+        if (products.length === 0) {
+          console.log("⚠️ Benzer ürün yok.");
+          return;
+        }
 
         const style = document.createElement("style");
         style.innerHTML = `
@@ -69,7 +84,7 @@
         const grid = document.createElement("div");
         grid.className = "similar-products-grid";
 
-        products.forEach((p) => {
+        products.forEach(p => {
           const card = document.createElement("div");
           card.className = "similar-product-card";
           card.innerHTML = `
@@ -77,60 +92,25 @@
               <img src="${p.image}" alt="${p.name}" />
               <div>${p.name}</div>
               <div class="price">${p.price} TL</div>
-            </a>`;
+            </a>
+          `;
           grid.appendChild(card);
         });
 
         container.appendChild(grid);
 
-        const targets = [
-          ".product-detail",
-          ".product-area",
-          ".urun-detay",
-          ".product-container",
-          ".product-wrapper",
-        ];
-        let inserted = false;
-        for (let i = 0; i < targets.length; i++) {
-          const el = document.querySelector(targets[i]);
-          if (el) {
-            el.appendChild(container);
-            inserted = true;
-            break;
-          }
-        }
-
-        if (!inserted) {
+        // 🎯 Hedef: .vertical-tab elementinin sonuna ekle
+        const targetEl = document.querySelector(".vertical-tab");
+        if (targetEl) {
+          targetEl.appendChild(container);
+          console.log("✅ Widget .vertical-tab altına eklendi.");
+        } else {
           document.body.appendChild(container);
+          console.warn("⚠️ .vertical-tab bulunamadı, body'e eklendi.");
         }
       })
-      .catch((e) => console.error("❌ Benzer ürünler yüklenemedi:", e));
-  }
-
-  const oldDataLayer = window.dataLayer || [];
-  const newDataLayer = [];
-
-  window.dataLayer = newDataLayer;
-  newDataLayer.push = function () {
-    for (const event of arguments) {
-      if (event.event === "view_item" && event.product_id) {
-        console.log("🎯 view_item yakalandı:", event);
-        renderWidget(event.product_id);
-      }
-    }
-    return Array.prototype.push.apply(oldDataLayer, arguments);
-  };
-
-  // Eski event'leri de kontrol et
-  setTimeout(() => {
-    const allEvents = [...oldDataLayer, ...newDataLayer];
-    const match = allEvents.find((e) => e.event === "view_item" && e.product_id);
-    if (match) {
-      console.log("📦 view_item başlangıçta bulundu:", match);
-      renderWidget(match.product_id);
-    } else {
-      const sku = extractSKUFromDOM();
-      if (sku) renderWidget(sku);
-    }
-  }, 800);
+      .catch(err => {
+        console.error("❌ API hatası:", err);
+      });
+  }, 300);
 })();
