@@ -107,33 +107,30 @@
       .catch((e) => console.error("❌ Benzer ürünler yüklenemedi:", e));
   }
 
-  // 1️⃣ dataLayer.push override ile event yakalama
-  const originalPush = window.dataLayer?.push;
-  window.dataLayer = window.dataLayer || [];
+  const oldDataLayer = window.dataLayer || [];
+  const newDataLayer = [];
 
-  window.dataLayer.push = function () {
-    const args = Array.from(arguments);
-    for (const event of args) {
+  window.dataLayer = newDataLayer;
+  newDataLayer.push = function () {
+    for (const event of arguments) {
       if (event.event === "view_item" && event.product_id) {
         console.log("🎯 view_item yakalandı:", event);
         renderWidget(event.product_id);
       }
     }
-    return originalPush.apply(window.dataLayer, arguments);
+    return Array.prototype.push.apply(oldDataLayer, arguments);
   };
 
-  // 2️⃣ sayfa yüklendiğinde eski event varsa onu yakala
+  // Eski event'leri de kontrol et
   setTimeout(() => {
-    const initialEvent = window.dataLayer.find(
-      (e) => e.event === "view_item" && e.product_id
-    );
-    if (initialEvent) {
-      console.log("📦 view_item başlangıçta bulundu:", initialEvent);
-      renderWidget(initialEvent.product_id);
+    const allEvents = [...oldDataLayer, ...newDataLayer];
+    const match = allEvents.find((e) => e.event === "view_item" && e.product_id);
+    if (match) {
+      console.log("📦 view_item başlangıçta bulundu:", match);
+      renderWidget(match.product_id);
     } else {
-      // 3️⃣ fallback olarak DOM’dan dene
       const sku = extractSKUFromDOM();
       if (sku) renderWidget(sku);
     }
-  }, 1000);
+  }, 800);
 })();
