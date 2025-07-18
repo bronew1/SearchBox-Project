@@ -1,42 +1,21 @@
 (function () {
   console.log("📦 Benzer ürün widget başlatıldı...");
-  var checkCount = 0;
-  var interval = setInterval(function () {
-    checkCount++;
-    if (checkCount > 30) clearInterval(interval); // 9 saniye deneme
 
-    // view_item eventi dataLayer'da var mı kontrol et
-    if (!window.dataLayer || !window.dataLayer.length) {
-      console.log("❌ dataLayer henüz yok");
-      return;
+  function extractSKUFromDOM() {
+    const el = document.querySelector("p.product-info-sku");
+    if (el?.textContent.includes("Ürün Kodu:")) {
+      const sku = el.textContent.split("Ürün Kodu:")[1].trim();
+      console.log("🛠️ SKU DOM’dan bulundu:", sku);
+      return sku;
     }
+    return null;
+  }
 
-    let sku = null;
-
-    // 1️⃣ dataLayer'dan sku al
-    const viewItemEvent = window.dataLayer.find(
-      (e) => e.event === "view_item" && e.product_id
-    );
-    if (viewItemEvent) {
-      sku = viewItemEvent.product_id;
-      console.log("✅ SKU dataLayer’dan alındı:", sku);
-    }
-
-    // 2️⃣ Fallback: DOM'dan al
-    if (!sku) {
-      const skuText = document.querySelector("p.product-info-sku")?.textContent;
-      if (skuText?.includes("Ürün Kodu:")) {
-        sku = skuText.split("Ürün Kodu:")[1].trim();
-        console.log("🛠️ SKU DOM’dan bulundu:", sku);
-      }
-    }
-
+  function renderWidget(sku) {
     if (!sku) {
       console.log("❌ SKU bulunamadı, widget durduruldu.");
       return;
     }
-
-    clearInterval(interval);
 
     const apiUrl = "https://searchprojectdemo.com/api/recommendations/similar/" + sku + "/";
 
@@ -45,7 +24,6 @@
       .then((data) => {
         const products = data.products || [];
         console.log("🧲 Benzer ürünler getirildi:", products);
-
         if (products.length === 0) return;
 
         const style = document.createElement("style");
@@ -99,14 +77,12 @@
               <img src="${p.image}" alt="${p.name}" />
               <div>${p.name}</div>
               <div class="price">${p.price} TL</div>
-            </a>
-          `;
+            </a>`;
           grid.appendChild(card);
         });
 
         container.appendChild(grid);
 
-        // Ekleme noktası
         const targets = [
           ".product-detail",
           ".product-area",
@@ -128,8 +104,36 @@
           document.body.appendChild(container);
         }
       })
-      .catch((e) => {
-        console.error("❌ Benzer ürünler yüklenemedi:", e);
-      });
-  }, 300);
+      .catch((e) => console.error("❌ Benzer ürünler yüklenemedi:", e));
+  }
+
+  // 1️⃣ dataLayer.push override ile event yakalama
+  const originalPush = window.dataLayer?.push;
+  window.dataLayer = window.dataLayer || [];
+
+  window.dataLayer.push = function () {
+    const args = Array.from(arguments);
+    for (const event of args) {
+      if (event.event === "view_item" && event.product_id) {
+        console.log("🎯 view_item yakalandı:", event);
+        renderWidget(event.product_id);
+      }
+    }
+    return originalPush.apply(window.dataLayer, arguments);
+  };
+
+  // 2️⃣ sayfa yüklendiğinde eski event varsa onu yakala
+  setTimeout(() => {
+    const initialEvent = window.dataLayer.find(
+      (e) => e.event === "view_item" && e.product_id
+    );
+    if (initialEvent) {
+      console.log("📦 view_item başlangıçta bulundu:", initialEvent);
+      renderWidget(initialEvent.product_id);
+    } else {
+      // 3️⃣ fallback olarak DOM’dan dene
+      const sku = extractSKUFromDOM();
+      if (sku) renderWidget(sku);
+    }
+  }, 1000);
 })();
