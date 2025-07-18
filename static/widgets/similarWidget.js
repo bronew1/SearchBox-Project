@@ -1,19 +1,18 @@
 (function () {
   var interval = setInterval(function () {
-    var pTags = document.getElementsByTagName("p");
-    var sku = null;
+    if (!window.dataLayer || !window.dataLayer.length) return;
 
-    for (var i = 0; i < pTags.length; i++) {
-      var text = pTags[i].innerText || pTags[i].textContent;
-      if (text.indexOf("Ürün Kodu:") !== -1) {
-        sku = text.replace("Ürün Kodu:", "").trim();
-        break;
-      }
-    }
+    // dataLayer içinde product_id içeren objeyi bul
+    var productEvent = window.dataLayer.find(function (event) {
+      return event.event === "view_item" && event.product_id;
+    });
 
+    if (!productEvent) return;
+
+    var sku = productEvent.product_id;
     if (!sku) return;
 
-    clearInterval(interval); // Ürün kodunu bulunca döngüyü durdur
+    clearInterval(interval); // Ürün kodu bulunduysa kontrolü durdur
 
     var apiUrl = "https://searchprojectdemo.com/api/recommendations/similar/" + sku + "/";
 
@@ -101,5 +100,5 @@
       }
     };
     xhr.send();
-  }, 500); // Her 500ms'de bir kontrol et
+  }, 300); // Her 300ms'de bir dataLayer kontrolü
 })();
