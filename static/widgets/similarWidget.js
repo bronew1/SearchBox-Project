@@ -1,86 +1,106 @@
 (function () {
-  window.addEventListener("message", async (event) => {
-    if (!event?.data || event.data.event_name !== "view_item") return;
+  console.log("🧪 Worker etiketi başarıyla yüklendi!");
 
-    const { product_id } = event.data;
+  const { sku, price } = getSKUAndPrice();
+  const userId = getUserId();
 
-    if (!product_id) {
-      console.error("❌ product_id bulunamadı, widget durduruldu.");
-      return;
-    }
+  if (sku) {
+    sendEvent("view_item", {
+      product_id: sku,
+      event_value: price ? String(price) : null
+    });
 
-    console.log(`👀 Benzer ürün widget başlatıldı: ${product_id}`);
-    console.log("📦 Ürün ID:", product_id);
+    // ✅ Benzer ürün widget'ı başlatılsın
+    console.log("👀 Benzer ürün widget başlatıldı: Ürün ID =", sku);
 
-    if (document.querySelector("#similar-products-widget")) return;
+    fetch(`https://searchprojectdemo.com/api/recommendations/similar/${sku}`)
+      .then(res => res.json())
+      .then(data => {
+        const verticalTab = document.querySelector(".vertical-tab");
+        if (!verticalTab) return console.warn("❌ .vertical-tab bulunamadı");
 
-    const waitForBody = () =>
-      new Promise((resolve) => {
-        if (document.body) return resolve();
-        const interval = setInterval(() => {
-          if (document.body) {
-            clearInterval(interval);
-            resolve();
-          }
-        }, 50);
+        // Eğer widget daha önce eklenmişse tekrar ekleme
+        if (document.querySelector("#similar-products-widget")) return;
+
+        const container = document.createElement("div");
+        container.id = "similar-products-widget";
+        container.style.padding = "20px 0";
+
+        // Ürünleri HTML olarak ekle
+        if (data.products?.length) {
+          data.products.forEach(p => {
+            const item = document.createElement("div");
+            item.style.marginBottom = "15px";
+            item.innerHTML = `
+              <a href="${p.url}" target="_blank" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+                <img src="${p.image}" style="width: 80px; height: auto; margin-right: 10px;" />
+                <div>
+                  <div><strong>${p.name}</strong></div>
+                  <div>${p.price} TL</div>
+                </div>
+              </a>
+            `;
+            container.appendChild(item);
+          });
+        } else {
+          container.innerHTML = "<p>Benzer ürün bulunamadı.</p>";
+        }
+
+        // vertical-tab'den sonra ekle
+        verticalTab.parentNode.insertBefore(container, verticalTab.nextSibling);
       });
+  }
 
-    await waitForBody();
+  function getUserId() {
+    let userId = localStorage.getItem("user_id");
+    if (!userId) {
+      userId = "user-" + Math.random().toString(36).substring(2);
+      localStorage.setItem("user_id", userId);
+    }
+    return userId;
+  }
 
-    const widgetContainer = document.createElement("div");
-    widgetContainer.id = "similar-products-widget";
-    widgetContainer.style.position = "fixed";
-    widgetContainer.style.bottom = "20px";
-    widgetContainer.style.right = "20px";
-    widgetContainer.style.width = "360px";
-    widgetContainer.style.maxHeight = "80vh";
-    widgetContainer.style.overflowY = "auto";
-    widgetContainer.style.backgroundColor = "#fff";
-    widgetContainer.style.border = "1px solid #ccc";
-    widgetContainer.style.borderRadius = "12px";
-    widgetContainer.style.padding = "16px";
-    widgetContainer.style.boxShadow = "0 4px 16px rgba(0,0,0,0.2)";
-    widgetContainer.style.zIndex = "9999";
-    widgetContainer.innerText = "⏳ Yükleniyor...";
-
-    document.body.appendChild(widgetContainer);
+  function getSKUAndPrice() {
+    let sku = null;
+    let price = null;
 
     try {
-      const res = await fetch(`https://searchprojectdemo.com/api/recommendations/similar/${product_id}/`);
-      const json = await res.json();
-      const data = json.products;
+      const script = document.querySelector('script[type="application/ld+json"]');
+      const json = JSON.parse(script?.innerText || "{}");
 
-      if (!Array.isArray(data) || data.length === 0) {
-        widgetContainer.innerText = "Benzer ürün bulunamadı.";
-        return;
+      if (json["@graph"] && Array.isArray(json["@graph"])) {
+        const graphItem = json["@graph"].find(item => item.sku);
+        sku = graphItem?.sku || null;
+        price = graphItem?.offers?.price || null;
       }
-
-      widgetContainer.innerHTML = "<h3 style='margin-bottom:12px;'>Benzer Ürünler</h3>";
-
-      data.forEach((item) => {
-        const card = document.createElement("div");
-        card.style.display = "flex";
-        card.style.alignItems = "center";
-        card.style.marginBottom = "12px";
-        card.style.gap = "12px";
-        card.style.borderBottom = "1px solid #eee";
-        card.style.paddingBottom = "10px";
-
-        card.innerHTML = `
-          <a href="${item.url}" target="_blank" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
-            <img src="${item.image}" alt="${item.name}" width="64" height="64" style="object-fit: cover; border-radius: 8px;" />
-            <div style="margin-left: 8px;">
-              <p style="margin: 0; font-size: 14px;"><strong>${item.name}</strong></p>
-              <p style="margin: 4px 0 0 0; color: #888;">${item.price} TL</p>
-            </div>
-          </a>
-        `;
-
-        widgetContainer.appendChild(card);
-      });
-    } catch (err) {
-      console.error("❌ Widget verisi alınamadı:", err);
-      widgetContainer.innerText = "Bir hata oluştu.";
+    } catch (e) {
+      console.warn("⚠️ JSON-LD parse edilemedi:", e);
     }
-  });
+
+    if (!price) {
+      const priceEl = document.querySelector("p.product-info-price");
+      if (priceEl) {
+        price = priceEl.innerText.replace(/[^0-9]/g, "");
+      }
+    }
+
+    return { sku, price };
+  }
+
+  function sendEvent(eventName, extraData = {}) {
+    const data = {
+      event_name: eventName,
+      user_id: userId,
+      ...extraData,
+      utm_source: localStorage.getItem("utm_source") || null
+    };
+
+    fetch("https://searchprojectdemo.com/api/track-event/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(() => {
+      console.log("📡 Event gönderildi:", eventName, data);
+    });
+  }
 })();
