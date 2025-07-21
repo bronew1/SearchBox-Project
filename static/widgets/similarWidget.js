@@ -13,10 +13,8 @@
 
     console.log("✅ Widget başlatılıyor, product_id:", product_id);
 
-    // Eğer widget zaten varsa tekrar ekleme
     if (document.querySelector("#similar-products-widget")) return;
 
-    // Widget container oluştur
     const widgetContainer = document.createElement("div");
     widgetContainer.id = "similar-products-widget";
     widgetContainer.style.position = "fixed";
@@ -37,7 +35,8 @@
 
     try {
       const res = await fetch(`https://searchprojectdemo.com/api/recommendations/similar/${product_id}/`);
-      const data = await res.json();
+      const response = await res.json();
+      const data = response.products;
 
       if (!Array.isArray(data) || data.length === 0) {
         widgetContainer.innerText = "Benzer ürün bulunamadı.";
