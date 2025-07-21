@@ -13,7 +13,22 @@
 
     console.log("✅ Widget başlatılıyor, product_id:", product_id);
 
+    // Widget zaten varsa tekrar ekleme
     if (document.querySelector("#similar-products-widget")) return;
+
+    // DOM yüklendiyse widget'ı ekle, değilse bekle
+    const waitForBody = () =>
+      new Promise((resolve) => {
+        if (document.body) return resolve();
+        const interval = setInterval(() => {
+          if (document.body) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 50);
+      });
+
+    await waitForBody();
 
     const widgetContainer = document.createElement("div");
     widgetContainer.id = "similar-products-widget";
@@ -35,8 +50,8 @@
 
     try {
       const res = await fetch(`https://searchprojectdemo.com/api/recommendations/similar/${product_id}/`);
-      const response = await res.json();
-      const data = response.products;
+      const json = await res.json();
+      const data = json.products;
 
       if (!Array.isArray(data) || data.length === 0) {
         widgetContainer.innerText = "Benzer ürün bulunamadı.";
@@ -66,7 +81,6 @@
 
         widgetContainer.appendChild(card);
       });
-
     } catch (err) {
       console.error("❌ Widget verisi alınamadı:", err);
       widgetContainer.innerText = "Bir hata oluştu.";
