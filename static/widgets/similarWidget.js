@@ -1,6 +1,4 @@
 (function () {
-  console.log("👀 Benzer ürün widget başlatıldı...");
-
   window.addEventListener("message", async (event) => {
     if (!event?.data || event.data.event_name !== "view_item") return;
 
@@ -11,12 +9,11 @@
       return;
     }
 
-    console.log("✅ Widget başlatılıyor, product_id:", product_id);
+    console.log(`👀 Benzer ürün widget başlatıldı: ${product_id}`);
+    console.log("📦 Ürün ID:", product_id);
 
-    // Widget zaten varsa tekrar ekleme
     if (document.querySelector("#similar-products-widget")) return;
 
-    // DOM yüklendiyse widget'ı ekle, değilse bekle
     const waitForBody = () =>
       new Promise((resolve) => {
         if (document.body) return resolve();
