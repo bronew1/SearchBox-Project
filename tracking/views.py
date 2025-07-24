@@ -1,3 +1,4 @@
+from django.forms import FloatField
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 import json
@@ -23,6 +24,7 @@ from products.models import Product  # kendi ürün modelini buraya import et
 from django.views.decorators.http import require_GET
 from django.utils.dateparse import parse_date
 from django.db.models import Sum
+from django.db.models.functions import Cast
 
 @csrf_exempt
 def track_event(request):
@@ -275,8 +277,14 @@ def revenue_view(request):
     events = UserEvent.objects.filter(event_name="purchase")
 
     if start_date and end_date:
-        events = events.filter(timestamp__date__gte=parse_date(start_date), timestamp__date__lte=parse_date(end_date))
+        events = events.filter(
+            timestamp__date__gte=parse_date(start_date),
+            timestamp__date__lte=parse_date(end_date)
+        )
 
-    total_revenue = events.aggregate(total=Sum("event_value"))["total"] or 0
+    # event_value metin ise Float'a cast edilerek toplanmalı
+    total_revenue = events.aggregate(
+        total=Sum(Cast("event_value", FloatField()))
+    )["total"] or 0
 
     return JsonResponse({"status": "success", "revenue": total_revenue})
