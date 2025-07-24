@@ -282,9 +282,8 @@ def revenue_view(request):
             timestamp__date__lte=parse_date(end_date)
         )
 
-    # DİKKAT: Burada output_field=FloatField() olmalı
     total_revenue = events.aggregate(
-        total=Sum(Cast("event_value", output_field=FloatField()))
+        total=Sum(Cast("event_value", FloatField))  # DİKKAT: FloatField değil FloatField()
     )["total"] or 0
 
     return JsonResponse({"status": "success", "revenue": total_revenue})
