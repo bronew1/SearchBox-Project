@@ -21,7 +21,8 @@ from django.core.serializers import serialize
 from collections import Counter
 from products.models import Product  # kendi ürün modelini buraya import et
 from django.views.decorators.http import require_GET
-
+from django.utils.dateparse import parse_date
+from django.db.models import Sum
 
 @csrf_exempt
 def track_event(request):
@@ -265,3 +266,17 @@ def also_viewed_products(request, product_id):
             "price": p.price,
         })
     return JsonResponse(data, safe=False)
+
+
+def revenue_view(request):
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+
+    events = UserEvent.objects.filter(event_name="purchase")
+
+    if start_date and end_date:
+        events = events.filter(timestamp__date__gte=parse_date(start_date), timestamp__date__lte=parse_date(end_date))
+
+    total_revenue = events.aggregate(total=Sum("event_value"))["total"] or 0
+
+    return JsonResponse({"status": "success", "revenue": total_revenue})
