@@ -1,7 +1,8 @@
+from datetime import date, timedelta
 from urllib import response
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from .models import EmailTemplateCartReminder, EmailTemplateWelcome
+from .models import EmailTemplateCartReminder, EmailTemplateWelcome, Subscriber
 import logging
 from django.conf import settings
 from subscriptions.models import EmailTemplateRecommendation
@@ -160,3 +161,19 @@ def send_recommendation_email(to_email, sku):
     except Exception as e:
         print("❌ Email gönderim hatası:", e)
         return False
+    
+
+
+def filter_subscribers(time_filter, start=None, end=None):
+    today = date.today()
+    if time_filter == "1d":
+        return Subscriber.objects.filter(subscribed_at__gte=today - timedelta(days=1), is_active=True)
+    elif time_filter == "3d":
+        return Subscriber.objects.filter(subscribed_at__gte=today - timedelta(days=3), is_active=True)
+    elif time_filter == "7d":
+        return Subscriber.objects.filter(subscribed_at__gte=today - timedelta(days=7), is_active=True)
+    elif time_filter == "30d":
+        return Subscriber.objects.filter(subscribed_at__gte=today - timedelta(days=30), is_active=True)
+    elif time_filter == "custom" and start and end:
+        return Subscriber.objects.filter(subscribed_at__range=(start, end), is_active=True)
+    return Subscriber.objects.filter(is_active=True)
