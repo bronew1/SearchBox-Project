@@ -282,7 +282,7 @@ def revenue_view(request):
             timestamp__date__lte=parse_date(end_date)
         )
 
-    # event_value metin ise Float'a cast edilerek toplanmalı
+    # event_value'yu float'a çevirip toplamını alıyoruz
     total_revenue = events.aggregate(
         total=Sum(Cast("event_value", FloatField()))
     )["total"] or 0
