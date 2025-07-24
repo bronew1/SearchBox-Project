@@ -282,8 +282,14 @@ def revenue_view(request):
             timestamp__date__lte=parse_date(end_date)
         )
 
-    total_revenue = events.aggregate(
-        total=Sum(Cast("event_value", FloatField))  # DİKKAT: FloatField değil FloatField()
-    )["total"] or 0
+    total_revenue = 0
+
+    for event in events:
+        try:
+            # Eğer TL sembolü ya da nokta/virgül varsa temizliyoruz
+            value = str(event.event_value).replace("₺", "").replace(",", "").strip()
+            total_revenue += float(value)
+        except (ValueError, TypeError):
+            continue  # bozuk kayıtları atla
 
     return JsonResponse({"status": "success", "revenue": total_revenue})
