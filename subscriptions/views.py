@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from .models import EmailTemplateWelcome, Subscriber
 from .utils import send_welcome_email
 from django.views.decorators.http import require_GET
+from django.utils.dateparse import parse_date
 
 logger = logging.getLogger('subscriptions')
 
@@ -103,3 +104,24 @@ def update_welcome_email_template(request):
         return JsonResponse({"error": "Template bulunamadı"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+    
+
+def subscribe_list(request):
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+
+    queryset = Subscriber.objects.all()
+
+    if start_date:
+        queryset = queryset.filter(subscribed_at__date__gte=parse_date(start_date))
+    if end_date:
+        queryset = queryset.filter(subscribed_at__date__lte=parse_date(end_date))
+
+    data = [
+        {
+            "email": sub.email,
+            "subscribed_at": sub.subscribed_at.isoformat()
+        }
+        for sub in queryset
+    ]
+    return JsonResponse(data, safe=False)
