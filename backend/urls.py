@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import path, include
 from products.views import widget_products
-from tracking.views import also_viewed_products, daily_add_to_cart_counts, dashboard_stats, most_viewed_products, user_events_list  # ✔️ Doğru
+from tracking.views import also_viewed_products, daily_add_to_cart_counts, dashboard_stats, most_viewed_products, revenue_view, user_events_list  # ✔️ Doğru
 from tracking.views import cart_count, service_worker, track_event
 from subscriptions.views import subscribe 
 from django.conf import settings
@@ -20,6 +20,7 @@ urlpatterns = [
     path("api/ga4/", include("analytics.urls")),
     path("healthz", health_check),
     path("api/track-event/", track_event, name="track_event"),
+    path("api/revenue/", revenue_view, name="revenue_view"), #ciro
     path('api/subscribe/', include('subscriptions.urls')),
     path("api/cart-count/<str:product_id>/", cart_count),
     path('service-worker.js', service_worker),
