@@ -106,9 +106,9 @@ def update_welcome_email_template(request):
         return JsonResponse({"error": str(e)}, status=400)
     
 
-def subscribe_list(request):
-    start_date = request.GET.get("start_date")
-    end_date = request.GET.get("end_date")
+#def subscribe_list(request):
+#    start_date = request.GET.get("start_date")
+#    end_date = request.GET.get("end_date")
 
     queryset = Subscriber.objects.all()
 
