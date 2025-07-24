@@ -282,6 +282,7 @@ def revenue_view(request):
             timestamp__date__lte=parse_date(end_date)
         )
 
+    # DİKKAT: Burada output_field=FloatField() olmalı
     total_revenue = events.aggregate(
         total=Sum(Cast("event_value", output_field=FloatField()))
     )["total"] or 0
