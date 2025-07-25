@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'subscriptions',
     'webPush',
+    'ai_generator',
 
   
     
@@ -216,7 +217,17 @@ LOGGING = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": os.getenv("VAPID_PUBLIC_KEY"),
+    "VAPID_PRIVATE_KEY": os.getenv("VAPID_PRIVATE_KEY"),
+    "VAPID_ADMIN_EMAIL": "mailto:berk@example.com"
+}
+
 
 
 VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY")
 VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY")
+
+
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
