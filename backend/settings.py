@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'subscriptions',
     'webPush',
     'ai_generator',
+    'ads',
 
   
     
@@ -109,6 +110,16 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
+
+# settings.py
+
+#DATABASES = {
+#    "default": {
+#        "ENGINE": "django.db.backends.sqlite3",
+#        "NAME": "db.sqlite3",  # local bir dosya
+#    }
+#}
+
 
 # Max 10MB dosya yüklemeye izin ver
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
@@ -233,3 +244,9 @@ VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 STABILITY_API_KEY = os.getenv("STABILITY_API_KEY")
+
+
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI")
+DEVELOPER_TOKEN = os.environ.get("DEVELOPER_TOKEN", "TEST_DEVELOPER_TOKEN")
