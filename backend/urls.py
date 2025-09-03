@@ -33,6 +33,8 @@ urlpatterns = [
     path("api/campains/", include("campains.urls")),
     path("api/also-viewed/<str:product_id>/", also_viewed_products, name="also_viewed_products"),
     path("webpush/", include("webPush.urls")),
+    path("api/", include("ai_generator.urls")),
+    path("api/ads/", include("ads.urls")),
 
 ]
 
