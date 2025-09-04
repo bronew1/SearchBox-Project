@@ -9,6 +9,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
+
+
 def health_check(request):
     return HttpResponse("ok")
 
@@ -35,7 +37,8 @@ urlpatterns = [
     path("webpush/", include("webPush.urls")),
     path("api/", include("ai_generator.urls")),
     path("api/ads/", include("ads.urls")),
-
+    path("api/accounts/", include("account.urls")),  
+    
 ]
 
 
