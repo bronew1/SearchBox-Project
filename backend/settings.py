@@ -63,6 +63,8 @@ INSTALLED_APPS = [
     'webPush',
     'ai_generator',
     'ads',
+    'account',
+    'rest_framework_simplejwt',
 
   
     
@@ -250,3 +252,10 @@ GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI")
 DEVELOPER_TOKEN = os.environ.get("DEVELOPER_TOKEN", "TEST_DEVELOPER_TOKEN")
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
