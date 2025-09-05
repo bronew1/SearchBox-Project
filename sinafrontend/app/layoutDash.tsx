@@ -52,14 +52,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             {sidebarOpen ? "Kapat" : "Menü"}
           </button>
           <h1 className="text-xl font-bold">Dashboard Başlığı</h1>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-700">Hoşgeldin, Berk</span>
-            <img
-              src="https://via.placeholder.com/32"
-              alt="Avatar"
-              className="rounded-full"
-            />
-          </div>
+         
         </div>
 
         {/* Page Content */}
