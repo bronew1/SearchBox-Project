@@ -3,10 +3,11 @@
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Route } from "next"; // ✅ Route tipini import ettik
+import type { Route } from "next";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -15,6 +16,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     if (!token) {
       router.replace("/login"); // token yoksa login'e yönlendir
+    }
+
+    // ✅ username'i localStorage'dan oku
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername);
     }
   }, [router]);
 
@@ -57,7 +64,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </button>
           <h1 className="text-lg font-bold">Sina Pırlanta Customer Experience Platform</h1>
           <div className="flex items-center space-x-3">
-            <span className="text-gray-700">Hoşgeldin, Berk</span>
+            <span className="text-gray-700">
+              Hoşgeldin, {username || "Kullanıcı"}
+            </span>
             <img src="https://via.placeholder.com/32" alt="Avatar" className="rounded-full" />
           </div>
         </div>
@@ -82,7 +91,7 @@ function SidebarLink({
 }) {
   return (
     <Link
-      href={href as Route} // ✅ string’i Route tipine dönüştürdük
+      href={href as Route}
       className="hover:bg-gray-700 p-2 rounded text-black flex items-center gap-2"
     >
       <span>{icon}</span>

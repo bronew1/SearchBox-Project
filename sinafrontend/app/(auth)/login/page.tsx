@@ -23,14 +23,19 @@ export default function LoginPage() {
       if (res.ok) {
         const data = await res.json();
 
-        // LocalStorage
+        // ✅ Token'ları kaydet
         localStorage.setItem("accessToken", data.access);
         localStorage.setItem("refreshToken", data.refresh);
 
-        // Cookie (middleware için şart)
+        // ✅ Kullanıcı adını kaydet
+        localStorage.setItem("username", username);
+
+        // ✅ Cookie (middleware için şart)
         document.cookie = `accessToken=${data.access}; path=/; SameSite=Lax`;
         document.cookie = `refreshToken=${data.refresh}; path=/; SameSite=Lax`;
+        document.cookie = `username=${username}; path=/; SameSite=Lax`;
 
+        // ✅ Dashboard'a yönlendir
         router.push("/dashboard");
       } else {
         const errorData = await res.json();
