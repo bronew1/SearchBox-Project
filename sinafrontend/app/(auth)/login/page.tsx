@@ -30,12 +30,10 @@ export default function LoginPage() {
         // ✅ Kullanıcı adını kaydet
         localStorage.setItem("username", username);
 
-        // ✅ Cookie (middleware için şart)
+        // ✅ Cookie (middleware için)
         document.cookie = `accessToken=${data.access}; path=/; SameSite=Lax`;
         document.cookie = `refreshToken=${data.refresh}; path=/; SameSite=Lax`;
-        document.cookie = `username=${username}; path=/; SameSite=Lax`;
 
-        // ✅ Dashboard'a yönlendir
         router.push("/dashboard");
       } else {
         const errorData = await res.json();

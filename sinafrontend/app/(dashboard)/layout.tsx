@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Route } from "next";
+import type { Route } from "next"; // ✅ Route tipi
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -15,10 +15,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const token = cookies.find((c) => c.startsWith("accessToken="));
 
     if (!token) {
-      router.replace("/login"); // token yoksa login'e yönlendir
+      router.replace("/login");
     }
 
-    // ✅ username'i localStorage'dan oku
+    // ✅ localStorage'dan kullanıcı adını al
     const storedUsername = localStorage.getItem("username");
     if (storedUsername) {
       setUsername(storedUsername);
