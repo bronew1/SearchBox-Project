@@ -3,18 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 255, 255, 255; /* RGB format */
+  --foreground: 23, 23, 23;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 10, 10, 10;
+    --foreground: 237, 237, 237;
   }
 }
 
 body {
-  @apply bg-[var(--background)] text-[var(--foreground)];
+  @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))];
   font-family: Arial, sans-serif;
 }
