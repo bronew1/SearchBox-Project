@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <nav className="flex flex-col gap-3 mt-4">
           <SidebarLink href="/dashboard" icon="🏠" text="Dashboard" open={sidebarOpen} />
           <SidebarLink href="/anlik-kullanici" icon="👤" text="Anlık Kullanıcılar" open={sidebarOpen} />
-          <SidebarLink href="/kampanyalar" icon="📣" text="Kampanyalar" open={sidebarOpen} />
+          <SidebarLink href="/campaigns" icon="📣" text="Kampanyalar" open={sidebarOpen} />
           <SidebarLink href="/reklamlar" icon="📊" text="Reklamlar" open={sidebarOpen} />
           <SidebarLink href="/aboneler" icon="👥" text="Aboneler" open={sidebarOpen} />
           <SidebarLink href="/sepete-eklemeler" icon="🛒" text="Sepete Eklemeler" open={sidebarOpen} />
