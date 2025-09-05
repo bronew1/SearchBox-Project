@@ -3,14 +3,15 @@
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { Route } from "next"; // ✅ Route tipini import ettik
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const cookies = document.cookie.split(";").map(c => c.trim());
-    const token = cookies.find(c => c.startsWith("accessToken="));
+    const cookies = document.cookie.split(";").map((c) => c.trim());
+    const token = cookies.find((c) => c.startsWith("accessToken="));
 
     if (!token) {
       router.replace("/login"); // token yoksa login'e yönlendir
@@ -68,10 +69,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   );
 }
 
-function SidebarLink({ href, icon, text, open }: { href: string; icon: string; text: string; open: boolean }) {
+function SidebarLink({
+  href,
+  icon,
+  text,
+  open,
+}: {
+  href: string;
+  icon: string;
+  text: string;
+  open: boolean;
+}) {
   return (
     <Link
-      href={href}
+      href={href as Route} // ✅ string’i Route tipine dönüştürdük
       className="hover:bg-gray-700 p-2 rounded text-black flex items-center gap-2"
     >
       <span>{icon}</span>
