@@ -6,9 +6,9 @@ import {
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  LabelList,
 } from "recharts";
 
 type Stat = {
@@ -102,11 +102,11 @@ export default function DashboardStatsPanel() {
   // ✅ Loading ekranı GIF ile
   if (!stats) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-gray-50">
         <img
-          src="/sinagif.gif" // public klasörüne atılacak
+          src="/sinagif.gif" // public klasöründe olmalı
           alt="Yükleniyor..."
-          className="w-24 h-24"
+          className="w-32 h-32"
         />
       </div>
     );
@@ -114,9 +114,9 @@ export default function DashboardStatsPanel() {
 
   return (
     <div>
+      {/* Kartlar */}
       <div className="flex flex-wrap gap-6 mb-8">
-        {/* Kullanıcı Hareketleri */}
-        <div className="bg-white shadow rounded p-6 w-60">
+        <div className="bg-white shadow rounded-xl p-6 w-60 border border-gray-100">
           <div className="text-gray-500 text-sm">Kullanıcı Hareketleri</div>
           <div className="text-2xl font-bold">
             {stats.total_events.count.toLocaleString()}
@@ -131,8 +131,7 @@ export default function DashboardStatsPanel() {
           </div>
         </div>
 
-        {/* Sepete Ekleme */}
-        <div className="bg-white shadow rounded p-6 w-60">
+        <div className="bg-white shadow rounded-xl p-6 w-60 border border-gray-100">
           <div className="text-gray-500 text-sm">Sepete Ekleme</div>
           <div className="text-2xl font-bold">
             {stats.add_to_cart.count.toLocaleString()}
@@ -147,8 +146,7 @@ export default function DashboardStatsPanel() {
           </div>
         </div>
 
-        {/* Ciro */}
-        <div className="bg-white shadow rounded p-6 flex-1 min-w-[250px] border border-pink-200">
+        <div className="bg-white shadow rounded-xl p-6 flex-1 min-w-[250px] border border-pink-200">
           <div className="text-gray-500 text-sm">Ciro</div>
           <div className="text-3xl font-bold text-pink-600">
             {revenue !== null
@@ -164,50 +162,75 @@ export default function DashboardStatsPanel() {
         </div>
       </div>
 
-      {/* Tarih aralığı seçimi */}
+      {/* Tarih aralığı */}
       <div className="flex items-center gap-4 mb-4">
         <input
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="border rounded p-2"
+          className="border rounded-lg p-2 shadow-sm"
         />
         <input
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="border rounded p-2"
+          className="border rounded-lg p-2 shadow-sm"
         />
         <button
           onClick={handleApplyFilters}
-          className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
+          className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg shadow-md transition"
         >
           Uygula
         </button>
       </div>
 
       {/* Grafik */}
-      <div className="bg-white rounded p-4 shadow">
-        <h2 className="text-lg font-bold mb-4">En Çok Görüntülenen Ürünler</h2>
+      <div className="bg-white rounded-xl p-6 shadow border border-gray-100">
+        <h2 className="text-lg font-bold mb-4 text-gray-800">
+          En Çok Görüntülenen Ürünler
+        </h2>
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={products}>
-            <CartesianGrid strokeDasharray="3 3" />
+          <BarChart data={products} barSize={45}>
+            {/* ✅ Grid kaldırıldı */}
             <XAxis
               dataKey="short_id"
               angle={-30}
               textAnchor="end"
               interval={0}
               height={60}
+              tick={{ fill: "#6b7280", fontSize: 12 }}
             />
-            <YAxis />
+            <YAxis hide />
             <Tooltip
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #e5e7eb",
+                borderRadius: "0.75rem",
+                boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
+              }}
               formatter={(value: number, name: string, props: any) => [
                 `${value} görüntülenme`,
                 props.payload.product_id,
               ]}
-              cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
+              cursor={{ fill: "rgba(0,0,0,0.03)" }}
             />
-            <Bar dataKey="count" fill="#ebbecb" radius={[6, 6, 0, 0]} />
+
+            {/* ✅ Gradient */}
+            <defs>
+              <linearGradient id="pinkGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ec4899" stopOpacity={0.9} />
+                <stop offset="100%" stopColor="#fbcfe8" stopOpacity={0.7} />
+              </linearGradient>
+            </defs>
+
+            <Bar dataKey="count" fill="url(#pinkGradient)" radius={[10, 10, 0, 0]}>
+              <LabelList
+                dataKey="count"
+                position="top"
+                fill="#374151"
+                fontSize={12}
+              />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
