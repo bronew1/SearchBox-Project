@@ -56,6 +56,15 @@ export default function LoginPage() {
         onSubmit={handleLogin}
         className="bg-white/30 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-sm border border-white/40"
       >
+        {/* ✅ Logo */}
+        <div className="flex justify-center mb-4">
+          <img
+            src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg"
+            alt="Sina Pırlanta"
+            className="h-12"
+          />
+        </div>
+
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 drop-shadow">
           Sina Pırlanta CXP Giriş
         </h1>
