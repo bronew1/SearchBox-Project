@@ -4,6 +4,18 @@ import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Route } from "next"; // ✅ Route tipi
+import {
+  LayoutDashboard,
+  Users,
+  Megaphone,
+  BarChart3,
+  UserCheck,
+  ShoppingCart,
+  Mail,
+  Puzzle,
+  Menu,
+  X,
+} from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -26,53 +38,64 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-50 p-4 gap-4">
       {/* Sidebar */}
       <div
-        className={`bg-pink-200 text-white p-4 space-y-4 transition-all duration-300 flex flex-col ${
+        className={`bg-white shadow rounded-2xl transition-all duration-300 flex flex-col border border-gray-200 ${
           sidebarOpen ? "w-64" : "w-20"
         }`}
       >
-        <img
-          src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg"
-          alt="Sina Pırlanta"
-          className={`h-12 mx-auto transition-opacity duration-300 ${
-            sidebarOpen ? "opacity-100" : "opacity-0"
-          }`}
-        />
-        <nav className="flex flex-col gap-3 mt-4">
-          <SidebarLink href="/dashboard" icon="🏠" text="Dashboard" open={sidebarOpen} />
-          <SidebarLink href="/anlik-kullanici" icon="👤" text="Anlık Kullanıcılar" open={sidebarOpen} />
-          <SidebarLink href="/campaigns" icon="📣" text="Kampanyalar" open={sidebarOpen} />
-          <SidebarLink href="/reklamlar" icon="📊" text="Reklamlar" open={sidebarOpen} />
-          <SidebarLink href="/aboneler" icon="👥" text="Aboneler" open={sidebarOpen} />
-          <SidebarLink href="/sepete-eklemeler" icon="🛒" text="Sepete Eklemeler" open={sidebarOpen} />
-          <SidebarLink href="/welcome-template" icon="✉️" text="Hoşgeldin Maili" open={sidebarOpen} />
-          <SidebarLink href="/widgets" icon="🧩" text="Widgets" open={sidebarOpen} />
+        {/* Logo */}
+        <div className="flex justify-center py-6">
+          {sidebarOpen ? (
+            <img
+              src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg"
+              alt="Sina Pırlanta"
+              className="h-12"
+            />
+          ) : (
+            <img
+              src="/vercel.svg"
+              alt="Mini Logo"
+              className="h-8"
+            />
+          )}
+        </div>
+
+        {/* Menu Links */}
+        <nav className="flex flex-col gap-2 px-3 mt-4">
+          <SidebarLink href="/dashboard" icon={<LayoutDashboard size={20} />} text="Dashboard" open={sidebarOpen} />
+          <SidebarLink href="/anlik-kullanici" icon={<Users size={20} />} text="Anlık Kullanıcılar" open={sidebarOpen} />
+          <SidebarLink href="/campaigns" icon={<Megaphone size={20} />} text="Kampanyalar" open={sidebarOpen} />
+          <SidebarLink href="/reklamlar" icon={<BarChart3 size={20} />} text="Reklamlar" open={sidebarOpen} />
+          <SidebarLink href="/aboneler" icon={<UserCheck size={20} />} text="Aboneler" open={sidebarOpen} />
+          <SidebarLink href="/sepete-eklemeler" icon={<ShoppingCart size={20} />} text="Sepete Eklemeler" open={sidebarOpen} />
+          <SidebarLink href="/welcome-template" icon={<Mail size={20} />} text="Hoşgeldin Maili" open={sidebarOpen} />
+          <SidebarLink href="/widgets" icon={<Puzzle size={20} />} text="Widgets" open={sidebarOpen} />
         </nav>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col gap-4">
         {/* Navbar */}
-        <div className="flex items-center justify-between bg-white shadow px-4 py-3">
+        <div className="flex items-center justify-between bg-white shadow px-6 py-3 rounded-2xl border border-gray-200">
           <button
-            className="bg-gray-800 text-white px-3 py-1 rounded"
+            className="p-2 rounded-lg hover:bg-gray-100 transition"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            {sidebarOpen ? "✖" : "☰"}
+            {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <h1 className="text-lg font-bold">Sina Pırlanta Customer Experience Platform</h1>
+          <h1 className="text-lg font-semibold text-gray-800">Sina Pırlanta Customer Experience Platform</h1>
           <div className="flex items-center space-x-3">
-            <span className="text-gray-700">
-              Hoşgeldin, {username || "Kullanıcı"}
-            </span>
+            <span className="text-gray-700">Hoşgeldin, {username || "Kullanıcı"}</span>
             <img src="https://via.placeholder.com/32" alt="Avatar" className="rounded-full" />
           </div>
         </div>
 
         {/* Page Content */}
-        <main className="p-6 overflow-y-auto flex-1 bg-gray-50">{children}</main>
+        <main className="p-6 overflow-y-auto flex-1 bg-white shadow rounded-2xl border border-gray-200">
+          {children}
+        </main>
       </div>
     </div>
   );
@@ -85,16 +108,16 @@ function SidebarLink({
   open,
 }: {
   href: string;
-  icon: string;
+  icon: ReactNode;
   text: string;
   open: boolean;
 }) {
   return (
     <Link
       href={href as Route}
-      className="hover:bg-gray-700 p-2 rounded text-black flex items-center gap-2"
+      className="flex items-center gap-3 px-3 py-2 rounded-xl text-gray-700 hover:bg-pink-100 hover:text-pink-600 transition"
     >
-      <span>{icon}</span>
+      {icon}
       {open && <span>{text}</span>}
     </Link>
   );
