@@ -17,7 +17,7 @@ type UserEvent = {
   timestamp: string;
 };
 
-// Basit yardımcı hücreler (tasarımda kolay hizalama & tekrar)
+// Basit yardımcı hücreler
 function Th({
   children,
   align = "left",
@@ -27,11 +27,7 @@ function Th({
 }) {
   const alignCls =
     align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left";
-  return (
-    <th className={`px-4 py-2 ${alignCls}`}>
-      {children}
-    </th>
-  );
+  return <th className={`px-4 py-2 ${alignCls}`}>{children}</th>;
 }
 
 function Td({
@@ -60,7 +56,7 @@ function Td({
 function formatCurrencyTRY(value?: string | null) {
   if (value == null || value === "") return "-";
   const num = Number(value);
-  if (Number.isNaN(num)) return value; // sayı değilse geleni göster
+  if (Number.isNaN(num)) return value;
   try {
     return new Intl.NumberFormat("tr-TR", {
       style: "currency",
@@ -140,8 +136,14 @@ export default function UserEventsTable() {
           <tbody className="divide-y divide-gray-100">
             {loading && (
               <tr>
-                <td colSpan={12} className="px-4 py-8 text-center text-gray-500">
-                  Yükleniyor…
+                <td colSpan={12} className="px-4 py-16 text-center">
+                  <div className="flex justify-center">
+                    <img
+                      src="/sinagif.gif" // public/ klasöründe olmalı
+                      alt="Yükleniyor..."
+                      className="w-20 h-20"
+                    />
+                  </div>
                 </td>
               </tr>
             )}
