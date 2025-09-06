@@ -1,134 +1,108 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import * as XLSX from "xlsx";
 
-interface Subscriber {
+type Subscriber = {
+  id: number;
   email: string;
-  subscribed_at: string;
-}
+  created_at: string;
+};
 
-export default function AbonelerPage() {
+export default function SubscribersPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-  const [filteredSubscribers, setFilteredSubscribers] = useState<Subscriber[]>([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
-    fetch("https://searchprojectdemo.com/api/subscribe/")
+    fetch("https://searchprojectdemo.com/api/subscribers/")
       .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setSubscribers(data);
-          setFilteredSubscribers(data); // İlk yüklemede tümünü göster
-        } else {
-          setSubscribers([]);
-          setFilteredSubscribers([]);
-        }
-      })
-      .catch((err) => {
-        console.error("API error:", err);
-        setSubscribers([]);
-        setFilteredSubscribers([]);
-      });
+      .then((data) => setSubscribers(data))
+      .catch((err) => console.error(err));
   }, []);
 
-  const applyDateFilter = () => {
-    if (!startDate || !endDate) {
-      setFilteredSubscribers(subscribers);
-      return;
-    }
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    const filtered = subscribers.filter((sub) => {
-      const date = new Date(sub.subscribed_at);
-      return date >= start && date <= end;
-    });
-
-    setFilteredSubscribers(filtered);
+  const handleExport = () => {
+    alert("Excel'e aktarma işlemi burada çalışacak.");
   };
 
-  const exportToExcel = () => {
-    const data = filteredSubscribers.map((sub, index) => ({
-      "#": index + 1,
-      Email: sub.email,
-      "Kayıt Tarihi": new Date(sub.subscribed_at).toLocaleString("tr-TR"),
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Aboneler");
-
-    XLSX.writeFile(workbook, "aboneler.xlsx");
+  const handleApply = () => {
+    alert(`Filtreleme uygulanacak: ${startDate} - ${endDate}`);
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10 bg-white rounded-lg shadow-lg p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Abone Olan Kullanıcılar</h2>
-        <button
-          onClick={exportToExcel}
-          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-        >
-          Excel'e Aktar
-        </button>
+    <div className="p-6">
+      {/* Başlık ve filtre */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <h1 className="text-2xl font-semibold text-gray-800">
+          Abone Olan Kullanıcılar
+        </h1>
+
+        <div className="flex items-center gap-3">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="border rounded-lg p-2 text-sm shadow-sm focus:ring-2 focus:ring-pink-400 focus:outline-none"
+          />
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="border rounded-lg p-2 text-sm shadow-sm focus:ring-2 focus:ring-pink-400 focus:outline-none"
+          />
+          <button
+            onClick={handleApply}
+            className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg text-sm shadow transition"
+          >
+            Uygula
+          </button>
+          <button
+            onClick={handleExport}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm shadow transition"
+          >
+            Excel'e Aktar
+          </button>
+        </div>
       </div>
 
-      {/* Tarih Aralığı */}
-      <div className="flex gap-4 mb-4">
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border rounded p-2"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="border rounded p-2"
-        />
-        <button
-          onClick={applyDateFilter}
-          className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded"
-        >
-          Uygula
-        </button>
-      </div>
-
-      {/* Liste */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
-          <thead>
+      {/* Tablo */}
+      <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b">
             <tr>
-              <th className="py-3 px-4 border-b text-left">#</th>
-              <th className="py-3 px-4 border-b text-left">E-mail</th>
-              <th className="py-3 px-4 border-b text-left">Kayıt Tarihi</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                #
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                E-mail
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Kayıt Tarihi
+              </th>
             </tr>
           </thead>
           <tbody>
-            {filteredSubscribers.map((sub, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="py-2 px-4 border-b">{index + 1}</td>
-                <td className="py-2 px-4 border-b">{sub.email}</td>
-                <td className="py-2 px-4 border-b">
-                  {new Date(sub.subscribed_at).toLocaleString("tr-TR", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </td>
-              </tr>
-            ))}
-            {filteredSubscribers.length === 0 && (
+            {subscribers.length === 0 ? (
               <tr>
-                <td className="py-2 px-4 text-center" colSpan={3}>
-                  Kayıtlı abone bulunamadı.
+                <td
+                  colSpan={3}
+                  className="px-4 py-6 text-center text-gray-500 text-sm"
+                >
+                  Henüz abone bulunmuyor
                 </td>
               </tr>
+            ) : (
+              subscribers.map((s, idx) => (
+                <tr
+                  key={s.id}
+                  className="border-b hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-4 py-3 text-gray-700">{idx + 1}</td>
+                  <td className="px-4 py-3 font-medium text-gray-900">
+                    {s.email}
+                  </td>
+                  <td className="px-4 py-3 text-gray-600">{s.created_at}</td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
