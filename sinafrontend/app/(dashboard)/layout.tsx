@@ -48,15 +48,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       >
         {/* Logo */}
         <div className="flex justify-center py-6">
-          {sidebarOpen ? (
-            <img
-              src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg"
-              alt="Sina Pırlanta"
-              className="h-12"
-            />
-          ) : (
-            <img src="/vercel.svg" alt="Mini Logo" className="h-8" />
-          )}
+          <Link href="/dashboard">
+            {sidebarOpen ? (
+              <img
+                src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg"
+                alt="Sina Pırlanta"
+                className="h-12 cursor-pointer hover:opacity-80 transition"
+              />
+            ) : (
+              <img
+                src="/vercel.svg"
+                alt="Mini Logo"
+                className="h-8 cursor-pointer hover:opacity-80 transition"
+              />
+            )}
+          </Link>
         </div>
 
         {/* Menu Links */}
@@ -135,7 +141,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             Sina Pırlanta Customer Experience Platform
           </h1>
           <span className="text-gray-700">
-            Hoşgeldin, {username ? capitalizeFirstLetter(username) : "Kullanıcı"}
+            Hoşgeldin,{" "}
+            {username ? capitalizeFirstLetter(username) : "Kullanıcı"}
           </span>
         </div>
 
@@ -172,7 +179,9 @@ function SidebarLink({
       title={open ? undefined : text}
       aria-label={text}
     >
-      <span className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}>
+      <span
+        className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}
+      >
         {icon}
       </span>
       {open && <span className="leading-[1.15]">{text}</span>}
@@ -207,7 +216,9 @@ function SidebarLogout({ open }: { open: boolean }) {
         }
         text-gray-700 hover:bg-red-100 hover:text-red-600`}
     >
-      <span className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}>
+      <span
+        className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}
+      >
         <LogOut size={20} />
       </span>
       {open && <span>Çıkış Yap</span>}
