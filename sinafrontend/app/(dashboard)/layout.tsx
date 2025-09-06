@@ -15,6 +15,7 @@ import {
   Puzzle,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -22,10 +23,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [username, setUsername] = useState<string | null>(null);
   const router = useRouter();
 
+  // ✅ Baş harfi büyüten yardımcı fonksiyon
+  const capitalizeFirstLetter = (str: string) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   useEffect(() => {
     const cookies = document.cookie.split(";").map((c) => c.trim());
     const token = cookies.find((c) => c.startsWith("accessToken="));
-    if (!token) router.replace("/login");
+    if (!token) router.replace("/");
 
     const storedUsername = localStorage.getItem("username");
     if (storedUsername) setUsername(storedUsername);
@@ -53,8 +60,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Menu Links */}
-        {/* Küçükken gap-6: ikonlar arası mesafe büyür */}
-        <nav className={`flex flex-col px-3 mt-4 ${sidebarOpen ? "gap-4" : "gap-6"}`}>
+        <nav
+          className={`flex flex-col px-3 mt-4 flex-1 ${
+            sidebarOpen ? "gap-4" : "gap-6"
+          }`}
+        >
           <SidebarLink
             href="/dashboard"
             icon={<LayoutDashboard size={20} />}
@@ -103,6 +113,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             text="Widgets"
             open={sidebarOpen}
           />
+
+          {/* Çıkış Yap */}
+          <SidebarLogout open={sidebarOpen} />
         </nav>
       </div>
 
@@ -121,10 +134,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <h1 className="text-lg font-semibold text-gray-800">
             Sina Pırlanta Customer Experience Platform
           </h1>
-          <div className="flex items-center space-x-3">
-            <span className="text-gray-700">Hoşgeldin, {username || "Kullanıcı"}</span>
-            <img src="https://via.placeholder.com/32" alt="Avatar" className="rounded-full" />
-          </div>
+          <span className="text-gray-700">
+            Hoşgeldin, {username ? capitalizeFirstLetter(username) : "Kullanıcı"}
+          </span>
         </div>
 
         {/* Page Content */}
@@ -153,20 +165,52 @@ function SidebarLink({
       className={`flex items-center rounded-xl transition
         ${
           open
-            // Açıkken: daha iri yazı ve iç boşluk
             ? "gap-4 px-4 py-3 text-[15px] font-medium"
-            // Kapalıyken: kare buton + sabit yükseklik → ikonlar arası mesafe hissedilir
             : "justify-center h-12 w-full px-0 py-0"
         }
         text-gray-700 hover:bg-pink-100 hover:text-pink-600`}
       title={open ? undefined : text}
       aria-label={text}
     >
-      {/* İkonu ortalamak için bir kapsayıcı; kapalıyken kare görünür */}
       <span className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}>
         {icon}
       </span>
       {open && <span className="leading-[1.15]">{text}</span>}
     </Link>
+  );
+}
+
+function SidebarLogout({ open }: { open: boolean }) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("username");
+
+    document.cookie =
+      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    router.push("/");
+  };
+
+  return (
+    <button
+      onClick={handleLogout}
+      className={`flex items-center rounded-xl transition mt-auto
+        ${
+          open
+            ? "gap-4 px-4 py-3 text-[15px] font-medium"
+            : "justify-center h-12 w-full px-0 py-0"
+        }
+        text-gray-700 hover:bg-red-100 hover:text-red-600`}
+    >
+      <span className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}>
+        <LogOut size={20} />
+      </span>
+      {open && <span>Çıkış Yap</span>}
+    </button>
   );
 }
