@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'ads',
     'account',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',
 
   
     
@@ -244,9 +245,7 @@ VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY")
 
 
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-STABILITY_API_KEY = os.getenv("STABILITY_API_KEY")
 
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
@@ -264,3 +263,19 @@ REST_FRAMEWORK = {
 
 USE_TZ = True
 TIME_ZONE = "UTC"
+
+
+
+STABILITY_API_KEY = os.getenv("STABILITY_API_KEY")
+
+R2 = {
+    "aws_access_key_id": os.getenv("R2_ACCESS_KEY_ID"),
+    "aws_secret_access_key": os.getenv("R2_SECRET_ACCESS_KEY"),
+    "endpoint_url": os.getenv("R2_ENDPOINT"),
+    "bucket": os.getenv("R2_BUCKET"),
+}
+
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", CELERY_BROKER_URL)
+APPEND_SLASH = True
