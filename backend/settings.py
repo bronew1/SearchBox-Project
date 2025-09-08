@@ -276,6 +276,24 @@ R2 = {
 }
 
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", CELERY_BROKER_URL)
+#CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+#CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", CELERY_BROKER_URL)
 APPEND_SLASH = True
+
+from kombu import Connection
+import ssl
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+
+# Eğer rediss:// kullanıyorsak SSL opsiyonlarını ekle
+if CELERY_BROKER_URL and CELERY_BROKER_URL.startswith("rediss://"):
+    broker_use_ssl = {
+        'ssl_cert_reqs': ssl.CERT_NONE
+    }
+    result_backend_use_ssl = {
+        'ssl_cert_reqs': ssl.CERT_NONE
+    }
+else:
+    broker_use_ssl = None
+    result_backend_use_ssl = None
