@@ -7,7 +7,10 @@ from tracking.views import cart_count, service_worker, track_event
 from subscriptions.views import subscribe 
 from django.conf import settings
 from django.conf.urls.static import static
-
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 
 
@@ -38,6 +41,8 @@ urlpatterns = [
     path("api/", include("ai_generator.urls")),
     path("api/ads/", include("ads.urls")),
     path("api/accounts/", include("account.urls")),  
+     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     
 ]
 
