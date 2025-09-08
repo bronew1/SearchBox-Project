@@ -15,6 +15,11 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# .env dosyasını yükle
+load_dotenv(BASE_DIR / ".env")
+
 load_dotenv()
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
