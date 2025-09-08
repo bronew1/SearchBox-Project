@@ -13,6 +13,7 @@ export default function SubscribersPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  // Sayfa ilk açıldığında tüm aboneleri çek
   useEffect(() => {
     fetch("https://searchprojectdemo.com/api/subscribers/")
       .then((res) => res.json())
@@ -24,8 +25,19 @@ export default function SubscribersPage() {
     alert("Excel'e aktarma işlemi burada çalışacak.");
   };
 
+  // ✅ Tarih aralığına göre filtreli aboneleri çek
   const handleApply = () => {
-    alert(`Filtreleme uygulanacak: ${startDate} - ${endDate}`);
+    if (!startDate || !endDate) {
+      alert("Lütfen başlangıç ve bitiş tarihi seçin.");
+      return;
+    }
+
+    fetch(
+      `https://searchprojectdemo.com/api/subscribers/?start_date=${startDate}&end_date=${endDate}`
+    )
+      .then((res) => res.json())
+      .then((data) => setSubscribers(data))
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -100,7 +112,9 @@ export default function SubscribersPage() {
                   <td className="px-4 py-3 font-medium text-gray-900">
                     {s.email}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{s.created_at}</td>
+                  <td className="px-4 py-3 text-gray-600">
+                    {new Date(s.created_at).toLocaleString("tr-TR")}
+                  </td>
                 </tr>
               ))
             )}
