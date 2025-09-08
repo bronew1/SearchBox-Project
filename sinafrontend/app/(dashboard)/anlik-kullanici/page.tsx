@@ -68,11 +68,26 @@ function formatCurrencyTRY(value?: string | null) {
   }
 }
 
+// ✅ Türkiye saatine göre formatlama
 function formatTS(ts?: string | null) {
   if (!ts) return "-";
-  const d = new Date(ts);
-  if (Number.isNaN(d.getTime())) return ts;
-  return d.toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" });
+
+  try {
+    const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return ts;
+
+    return d.toLocaleString("tr-TR", {
+      timeZone: "Europe/Istanbul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  } catch {
+    return ts;
+  }
 }
 
 export default function UserEventsTable() {

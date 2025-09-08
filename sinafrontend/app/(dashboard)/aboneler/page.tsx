@@ -13,7 +13,7 @@ export default function SubscribersPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // Sayfa ilk açıldığında tüm aboneleri çek
+  // Sayfa yüklendiğinde tüm aboneleri getir
   useEffect(() => {
     fetch("https://searchprojectdemo.com/api/subscribers/")
       .then((res) => res.json())
@@ -21,14 +21,15 @@ export default function SubscribersPage() {
       .catch((err) => console.error(err));
   }, []);
 
+  // Excel Aktarma
   const handleExport = () => {
     alert("Excel'e aktarma işlemi burada çalışacak.");
   };
 
-  // ✅ Tarih aralığına göre filtreli aboneleri çek
+  // Filtreleme
   const handleApply = () => {
     if (!startDate || !endDate) {
-      alert("Lütfen başlangıç ve bitiş tarihi seçin.");
+      alert("Lütfen başlangıç ve bitiş tarihi seçiniz");
       return;
     }
 
@@ -37,7 +38,7 @@ export default function SubscribersPage() {
     )
       .then((res) => res.json())
       .then((data) => setSubscribers(data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Filtreleme hatası:", err));
   };
 
   return (
