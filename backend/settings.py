@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # .env dosyasını yükle
 load_dotenv(BASE_DIR / ".env")
 
-load_dotenv()
+#load_dotenv()
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -291,10 +291,6 @@ import ssl
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
-# SSL ayarları
-BROKER_USE_SSL = {
-    "ssl_cert_reqs": ssl.CERT_NONE
-}
-CELERY_REDIS_BACKEND_USE_SSL = {
-    "ssl_cert_reqs": ssl.CERT_NONE
-}
+# rediss:// için ssl ayarları (Render Key-Value)
+CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_NONE}
+CELERY_RESULT_BACKEND_SETTINGS = {"ssl_cert_reqs": ssl.CERT_NONE}
