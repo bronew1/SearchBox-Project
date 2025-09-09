@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   LogOut,
+  Palette,
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -93,6 +94,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             href="/reklamlar"
             icon={<BarChart3 size={20} />}
             text="Reklamlar"
+            open={sidebarOpen}
+          />
+          <SidebarLink
+            href="/tasarım"
+            icon={<Palette size={20} />}
+            text="Tasarım"
             open={sidebarOpen}
           />
           <SidebarLink
