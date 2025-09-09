@@ -97,7 +97,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             open={sidebarOpen}
           />
           <SidebarLink
-            href="/tasarım"
+            href="/tasarim"
             icon={<Palette size={20} />}
             text="Tasarım"
             open={sidebarOpen}
