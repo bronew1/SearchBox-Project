@@ -285,12 +285,13 @@ R2 = {
 #CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", CELERY_BROKER_URL)
 APPEND_SLASH = True
 
-from kombu import Connection
 import ssl
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+
 
 # rediss:// için ssl ayarları (Render Key-Value)
 CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_NONE}
 CELERY_RESULT_BACKEND_SETTINGS = {"ssl_cert_reqs": ssl.CERT_NONE}
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
