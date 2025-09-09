@@ -1,17 +1,17 @@
 # ads/tasks.py
-import io
-import uuid
-import requests
+import io, uuid, logging, requests
 from PIL import Image
 from django.conf import settings
 from boto3.session import Session
-from celery import shared_task
+from .models import GeneratedAsset
+from backend.celery import app
+
+log = logging.getLogger(__name__)
 
 STABILITY_URL = "https://api.stability.ai/v2beta/stable-image/generate/core"
 
-@shared_task(name="ads.tasks.generate_ad_task")
-def _get_r2_bucket():
-    """R2 bağlantısını çalışma anında kur (import-time değil)."""
+def _r2_bucket():
+    # Bucket/Session'i import anında değil, task içinde kur
     session = Session(
         aws_access_key_id=settings.R2["aws_access_key_id"],
         aws_secret_access_key=settings.R2["aws_secret_access_key"],
@@ -19,18 +19,16 @@ def _get_r2_bucket():
     s3 = session.resource("s3", endpoint_url=settings.R2["endpoint_url"])
     return s3.Bucket(settings.R2["bucket"])
 
-@shared_task(name="ads.tasks.generate_ad_task")
-def generate_ad_task(asset_id: int):
-    from .models import GeneratedAsset  # local import: circular riskini azaltır
-    asset = None
+@app.task(bind=True)
+def generate_ad_task(self, asset_id: int):
     try:
         asset = GeneratedAsset.objects.get(id=asset_id)
         asset.status = "processing"
         asset.save(update_fields=["status"])
 
-        # Stability API - binary çıktı iste
         headers = {
             "Authorization": f"Bearer {settings.STABILITY_API_KEY}",
+            # ✅ Görsel döndürmesi için JSON değil image/* istemeliyiz
             "Accept": "image/*",
         }
         files = {
@@ -39,43 +37,37 @@ def generate_ad_task(asset_id: int):
             "aspect_ratio": (None, asset.size or "1:1"),
         }
 
-        resp = requests.post(STABILITY_URL, headers=headers, files=files, timeout=90)
+        resp = requests.post(STABILITY_URL, headers=headers, files=files, timeout=60)
 
         if resp.status_code != 200:
             asset.status = "failed"
-            # JSON döndüyse okunabilir hata yaz
-            try:
-                asset.error = resp.json()
-            except Exception:
-                asset.error = resp.text
+            asset.error = f"{resp.status_code} {resp.text[:500]}"
             asset.save(update_fields=["status", "error"])
+            log.error("Stability fail: %s %s", resp.status_code, resp.text)
             return
 
-        # Görsel doğrula
+        # İçerik gerçekten PNG mi doğrula
         img_bytes = io.BytesIO(resp.content)
-        Image.open(img_bytes)  # sadece validasyon
+        Image.open(img_bytes)  # doğrulama
 
-        # R2'ya yükle
-        bucket = _get_r2_bucket()
+        bucket = _r2_bucket()
         key = f"ads/{uuid.uuid4()}.png"
-        bucket.upload_fileobj(io.BytesIO(resp.content), key, ExtraArgs={"ContentType": "image/png"})
+        bucket.upload_fileobj(io.BytesIO(resp.content), key,
+                              ExtraArgs={"ContentType": "image/png"})
 
-        url = f"{settings.R2['endpoint_url']}/{settings.R2['bucket']}/{key}"
+        file_url = f"{settings.R2['endpoint_url']}/{settings.R2['bucket']}/{key}"
 
         asset.status = "completed"
-        asset.result_url = url
-        asset.thumb_url = url
+        asset.result_url = file_url
+        asset.thumb_url = file_url
         asset.save(update_fields=["status", "result_url", "thumb_url"])
 
     except Exception as e:
-        if asset is None:
-            # asset bulunamadıysa dahi logla (opsiyonel: Sentry vs.)
-            return
-        asset.status = "failed"
-        asset.error = str(e)
-        asset.save(update_fields=["status", "error"])
-
-@shared_task(name="ads.tasks.debug_task")
-def debug_task():
-    print("✅ Celery çalışıyor!")
-    return "done"
+        log.exception("generate_ad_task error")
+        try:
+            asset = GeneratedAsset.objects.get(id=asset_id)
+            asset.status = "failed"
+            asset.error = str(e)
+            asset.save(update_fields=["status", "error"])
+        except Exception:
+            pass  # en kötü durumda log yeter
