@@ -24,11 +24,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [username, setUsername] = useState<string | null>(null);
   const router = useRouter();
 
-  // ✅ Baş harfi büyüten yardımcı fonksiyon
-  const capitalizeFirstLetter = (str: string) => {
-    if (!str) return str;
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
+  const capitalizeFirstLetter = (str: string) =>
+    str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
 
   useEffect(() => {
     const cookies = document.cookie.split(";").map((c) => c.trim());
@@ -43,9 +40,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <div className="flex h-screen bg-gray-50 p-4 gap-4">
       {/* Sidebar */}
       <div
-        className={`bg-white shadow rounded-2xl transition-all duration-300 flex flex-col border border-gray-200 ${
-          sidebarOpen ? "w-64" : "w-20"
+        className={`shadow rounded-2xl transition-all duration-300 flex flex-col border border-gray-200 ${
+          sidebarOpen ? "w-64 bg-white" : "w-20"
         }`}
+        style={
+          !sidebarOpen
+            ? {
+                background:
+                  "linear-gradient(180deg, #ebbecb 0%, #c17bb4 30%, #b48ec3 60%, #f1f1f1 100%)",
+              }
+            : undefined
+        }
       >
         {/* Logo */}
         <div className="flex justify-center py-6">
@@ -66,7 +71,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </Link>
         </div>
 
-        {/* Menu Links */}
+        {/* Menü Linkleri */}
         <nav
           className={`flex flex-col px-3 mt-4 flex-1 ${
             sidebarOpen ? "gap-4" : "gap-6"
@@ -132,7 +137,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </nav>
       </div>
 
-      {/* Main Content */}
+      {/* Ana İçerik */}
       <div className="flex-1 flex flex-col gap-4">
         {/* Navbar */}
         <div className="flex items-center justify-between bg-white shadow px-6 py-3 rounded-2xl border border-gray-200">
@@ -148,12 +153,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             Sina Pırlanta Customer Experience Platform
           </h1>
           <span className="text-gray-700">
-            Hoşgeldin,{" "}
-            {username ? capitalizeFirstLetter(username) : "Kullanıcı"}
+            Hoşgeldin, {username ? capitalizeFirstLetter(username) : "Kullanıcı"}
           </span>
         </div>
 
-        {/* Page Content */}
+        {/* Sayfa İçeriği */}
         <main className="p-6 overflow-y-auto flex-1 bg-white shadow rounded-2xl border border-gray-200">
           {children}
         </main>
@@ -187,7 +191,9 @@ function SidebarLink({
       aria-label={text}
     >
       <span
-        className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}
+        className={`grid place-items-center ${
+          open ? "" : "h-10 w-10 rounded-xl"
+        }`}
       >
         {icon}
       </span>
@@ -224,7 +230,9 @@ function SidebarLogout({ open }: { open: boolean }) {
         text-gray-700 hover:bg-red-100 hover:text-red-600`}
     >
       <span
-        className={`grid place-items-center ${open ? "" : "h-10 w-10 rounded-xl"}`}
+        className={`grid place-items-center ${
+          open ? "" : "h-10 w-10 rounded-xl"
+        }`}
       >
         <LogOut size={20} />
       </span>
