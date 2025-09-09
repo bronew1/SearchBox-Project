@@ -9,6 +9,7 @@ from celery import shared_task
 
 STABILITY_URL = "https://api.stability.ai/v2beta/stable-image/generate/core"
 
+@shared_task(name="ads.tasks.generate_ad_task")
 def _get_r2_bucket():
     """R2 bağlantısını çalışma anında kur (import-time değil)."""
     session = Session(
