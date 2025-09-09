@@ -4,10 +4,9 @@ from celery import Celery
 
 app = Celery("backend")
 
-app.conf.broker_url = os.getenv("CELERY_BROKER_URL")
-app.conf.result_backend = os.getenv("CELERY_RESULT_BACKEND")
-
-app.conf.broker_use_ssl = {"ssl_cert_reqs": ssl.CERT_NONE}
-app.conf.redis_backend_use_ssl = {"ssl_cert_reqs": ssl.CERT_NONE}
+app.conf.update(
+    broker_url=os.getenv("CELERY_BROKER_URL"),
+    result_backend=os.getenv("CELERY_RESULT_BACKEND"),
+)
 
 app.autodiscover_tasks()
