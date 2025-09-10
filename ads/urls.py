@@ -11,6 +11,7 @@ urlpatterns = [
     # Google OAuth flow
     path("google-auth/", views.google_auth_start, name="google_auth_start"),
     path("oauth2callback/", views.google_auth_callback, name="google_auth_callback"),
+    
 
     # Google Ads verileri
     path("accounts/", views.list_accounts, name="ads_accounts"),
