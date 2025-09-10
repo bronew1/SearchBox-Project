@@ -248,15 +248,23 @@ WEBPUSH_SETTINGS = {
 VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY")
 VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY")
 
+GOOGLE_ADS = {
+    "developer_token": "qeIr_xI8LELlrW0EhF9hhw",   # Google Ads API Center’dan aldığın token
+    "client_id": "118050717016-11jkmq7j7dtfqd6qaif5ndpdiut9iv8q.apps.googleusercontent.com",
+    "client_secret": "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",
+    "redirect_uri": "https://searchprojectdemo.com/oauth2callback/",
+    
+}
 
 
 
 
 
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
-GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI")
-DEVELOPER_TOKEN = os.environ.get("DEVELOPER_TOKEN", "TEST_DEVELOPER_TOKEN")
+
+#GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+#GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+#GOOGLE_REDIRECT_URI = os.environ.get("GOOGLE_REDIRECT_URI")
+#DEVELOPER_TOKEN = os.environ.get("DEVELOPER_TOKEN", "TEST_DEVELOPER_TOKEN")
 
 
 REST_FRAMEWORK = {
