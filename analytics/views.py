@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from recommendations.services.ga4_fetcher import get_total_revenue
+from recommendations.services.ga4_fetcher import PROPERTY_ID, get_total_revenue
 from .services.ga4_api import fetch_search_terms
 
 
@@ -22,8 +22,10 @@ def search_terms_view(request):
 def revenue_view(request):
     start_date = request.GET.get("start_date", "28daysAgo")
     end_date = request.GET.get("end_date", "today")
+    property_id = request.GET.get("property_id", PROPERTY_ID)  # URL'den al, yoksa sabiti kullan
+
     try:
-        revenue = get_total_revenue(start_date=start_date, end_date=end_date)
+        revenue = get_total_revenue(property_id=property_id, start_date=start_date, end_date=end_date)
         return JsonResponse({"status": "success", "revenue": revenue})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)

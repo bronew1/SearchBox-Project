@@ -5,14 +5,13 @@ from .models import PushSubscription
 from pywebpush import webpush, WebPushException
 from django.conf import settings
 
-
 @csrf_exempt
 def save_subscription(request):
     if request.method == "POST":
         data = json.loads(request.body)
 
         subscription = PushSubscription.objects.create(
-            user_id=data.get("user_id"),
+            user_id=data.get("user_id", "anonymous"),
             endpoint=data["endpoint"],
             auth_key=data["keys"]["auth"],
             p256dh_key=data["keys"]["p256dh"],
@@ -20,8 +19,6 @@ def save_subscription(request):
 
         return JsonResponse({"status": "success", "id": subscription.id})
     return JsonResponse({"error": "Only POST allowed"}, status=405)
-
-
 
 
 def send_push_notification(subscription, message):

@@ -11,7 +11,7 @@ from google.oauth2 import service_account
 from products.models import Product
 
 GA4_JSON_KEY_PATH = "credentials/ga4-service-account.json"
-PROPERTY_ID = "313316187"  # Buraya gerçek GA4 Property ID'ni koy
+PROPERTY_ID = "313316187"  
 
 credentials = service_account.Credentials.from_service_account_file(
     GA4_JSON_KEY_PATH,

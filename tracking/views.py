@@ -270,6 +270,7 @@ def also_viewed_products(request, product_id):
     return JsonResponse(data, safe=False)
 
 
+
 def revenue_view(request):
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
