@@ -33,7 +33,8 @@ export default function GoogleAdsPage() {
   }, []);
 
   const connect = () => {
-    window.location.href = `${BACKEND}/google-auth/`;
+    // ✅ backend tarafındaki doğru endpoint: /api/ads/google-auth/
+    window.location.href = `${BACKEND}/api/ads/google-auth/`;
   };
 
   const syncData = async () => {
