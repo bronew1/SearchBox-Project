@@ -8,7 +8,8 @@ type MetricRow = {
   impressions: number; clicks: number; cost: number; conversions: number; revenue: number;
 };
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND || "http://localhost:8000";
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND || "https://searchprojectdemo.com";
+
 
 export default function GoogleAdsPage() {
   const [connected, setConnected] = useState(false);
