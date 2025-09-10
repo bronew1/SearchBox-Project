@@ -1,109 +1,169 @@
 "use client";
+
 import { useEffect, useState } from "react";
 
-export default function AdsTable() {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+type Account = { id:number; customer_id:string; name:string; currency:string };
+type MetricRow = {
+  date: string; campaign_id: string; campaign_name: string;
+  impressions: number; clicks: number; cost: number; conversions: number; revenue: number;
+};
+
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND || "http://localhost:8000";
+
+export default function GoogleAdsPage() {
   const [connected, setConnected] = useState(false);
-
-  // Backend API base URL (senin domainin)
-  const API_BASE = "https://searchprojectdemo.com/api/ads";
-
-  // Google Ads verilerini çek
-  async function fetchAds() {
-    try {
-      const res = await fetch(`${API_BASE}/ads-data/`, {
-        credentials: "include",
-      });
-
-      if (res.status === 401) {
-        // Kullanıcı Google hesabını bağlamamış
-        setConnected(false);
-        setData([]);
-        return;
-      }
-
-      // JSON mu kontrol et
-      const contentType = res.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const json = await res.json();
-        setData(json.data || []);
-        setConnected(true);
-      } else {
-        // JSON yerine HTML dönüyorsa hata/log kaydı
-        console.error("JSON yerine HTML döndü:", await res.text());
-        setConnected(false);
-        setData([]);
-      }
-    } catch (err) {
-      console.error("Veri alınırken hata:", err);
-      setConnected(false);
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selected, setSelected] = useState<string>("");
+  const [start, setStart] = useState<string>("");
+  const [end, setEnd] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [rows, setRows] = useState<MetricRow[]>([]);
+  const [summary, setSummary] = useState<{
+    impressions:number; clicks:number; cost:number; revenue:number; roas:number|null
+  }>();
 
   useEffect(() => {
-    fetchAds();
+    fetch(`${BACKEND}/api/ads/accounts/`, { credentials: "include" })
+      .then(r => r.json())
+      .then(d => {
+        setConnected(!!d.connected);
+        setAccounts(d.accounts || []);
+        if (d.accounts?.[0]) setSelected(d.accounts[0].customer_id);
+      });
   }, []);
 
-  if (loading) return <p className="p-4">Yükleniyor...</p>;
+  const connect = () => {
+    window.location.href = `${BACKEND}/google-auth/`;
+  };
 
-  if (!connected) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h2 className="text-lg font-semibold mb-4">
-          Reklam verilerini görmek için önce Google hesabınızı bağlayın
-        </h2>
-        <a
-          href={`${API_BASE}/google-login/`}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Google ile Bağlan
-        </a>
-      </div>
-    );
-  }
+  const syncData = async () => {
+    if (!selected) return;
+    setLoading(true);
+    await fetch(`${BACKEND}/api/ads/sync/`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ customer_id: selected, start: start || undefined, end: end || undefined }),
+      credentials: "include"
+    }).then(r => r.json());
+    setLoading(false);
+    await loadMetrics();
+  };
+
+  const loadMetrics = async () => {
+    if (!selected) return;
+    setLoading(true);
+    const params = new URLSearchParams({ customer_id: selected });
+    if (start) params.append("start", start);
+    if (end) params.append("end", end);
+    const d = await fetch(`${BACKEND}/api/ads/metrics/?${params.toString()}`, { credentials:"include" }).then(r => r.json());
+    setRows(d.rows || []);
+    setSummary(d.summary);
+    setLoading(false);
+  };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Google Ads Kampanyaları</h1>
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Google Ads</h1>
+        {!connected ? (
+          <button onClick={connect} className="px-4 py-2 rounded-xl bg-black text-white">
+            Google ile Bağlan
+          </button>
+        ) : (
+          <span className="text-green-700 font-medium">Bağlı</span>
+        )}
+      </div>
 
-      {data.length === 0 ? (
-        <p>Henüz veri yok.</p>
-      ) : (
-        <table className="min-w-full border">
-          <thead>
+      <div className="grid md:grid-cols-4 gap-3">
+        <div className="col-span-2">
+          <label className="text-sm text-gray-600">Hesap</label>
+          <select value={selected} onChange={e=>setSelected(e.target.value)} className="w-full rounded-xl border p-2">
+            {accounts.map(a => (
+              <option key={a.customer_id} value={a.customer_id}>
+                {a.name || a.customer_id} ({a.currency || "?"})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="text-sm text-gray-600">Başlangıç</label>
+          <input type="date" value={start} onChange={e=>setStart(e.target.value)} className="w-full rounded-xl border p-2"/>
+        </div>
+        <div>
+          <label className="text-sm text-gray-600">Bitiş</label>
+          <input type="date" value={end} onChange={e=>setEnd(e.target.value)} className="w-full rounded-xl border p-2"/>
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        <button onClick={syncData} disabled={!selected || loading} className="px-4 py-2 rounded-xl bg-indigo-600 text-white disabled:opacity-50">
+          {loading ? "İşleniyor..." : "Verileri Senkronize Et"}
+        </button>
+        <button onClick={loadMetrics} disabled={!selected || loading} className="px-4 py-2 rounded-xl border">
+          Tabloyu Yükle
+        </button>
+      </div>
+
+      {summary && (
+        <div className="grid md:grid-cols-4 gap-4">
+          <Stat title="Gösterim" value={summary.impressions.toLocaleString()} />
+          <Stat title="Tıklama" value={summary.clicks.toLocaleString()} />
+          <Stat title="Maliyet" value={summary.cost.toFixed(2)} />
+          <Stat title="ROAS" value={summary.roas != null ? summary.roas.toFixed(2) : "-"} />
+        </div>
+      )}
+
+      <div className="overflow-auto rounded-xl border">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="border p-2">Campaign ID</th>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Clicks</th>
-              <th className="border p-2">Impressions</th>
-              <th className="border p-2">CTR</th>
-              <th className="border p-2">Avg CPC</th>
+              <Th>Tarih</Th><Th>Kampanya</Th><Th>Imp</Th><Th>Clk</Th>
+              <Th>Maliyet</Th><Th>Dönüşüm</Th><Th>Gelir</Th>
             </tr>
           </thead>
           <tbody>
-            {data.map((row: any, i: number) => (
-              <tr key={i}>
-                <td className="border p-2">{row.campaign_id}</td>
-                <td className="border p-2">{row.campaign_name}</td>
-                <td className="border p-2">{row.clicks}</td>
-                <td className="border p-2">{row.impressions}</td>
-                <td className="border p-2">
-                  {row.impressions > 0
-                    ? ((row.clicks / row.impressions) * 100).toFixed(2) + "%"
-                    : "0%"}
-                </td>
-                <td className="border p-2">
-                  {row.clicks > 0 ? (row.cost / row.clicks).toFixed(2) : "0"}
-                </td>
+            {rows.map((r, i) => (
+              <tr key={i} className="odd:bg-white even:bg-gray-50">
+                <Td>{r.date}</Td>
+                <Td className="max-w-[360px] truncate" title={r.campaign_name}>
+                  {r.campaign_name}
+                </Td>
+                <Td>{r.impressions}</Td>
+                <Td>{r.clicks}</Td>
+                <Td>{r.cost.toFixed(2)}</Td>
+                <Td>{r.conversions}</Td>
+                <Td>{r.revenue}</Td>
               </tr>
             ))}
+            {rows.length === 0 && (
+              <tr>
+                <td className="p-4 text-gray-500" colSpan={7}>Henüz veri yok.</td>
+              </tr>
+            )}
           </tbody>
         </table>
-      )}
+      </div>
     </div>
   );
+}
+
+function Stat({title, value}:{title:string; value:string}) {
+  return (
+    <div className="rounded-2xl border p-4">
+      <div className="text-gray-500 text-sm">{title}</div>
+      <div className="text-xl font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function Th({children}:{children:React.ReactNode}) {
+  return <th className="text-left p-3 font-semibold">{children}</th>;
+}
+
+function Td({children, className, title}:{
+  children: React.ReactNode;
+  className?: string;
+  title?: string;
+}) {
+  return <td className={`p-3 ${className||""}`} title={title}>{children}</td>;
 }
