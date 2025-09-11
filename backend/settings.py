@@ -36,6 +36,15 @@ SECRET_KEY = 'django-insecure-tmkple-p1pbf*-xj@b)8qr&)9tfb89d4p&3i=!x4j1#h96_bwv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+GOOGLE_ADS = {
+    "developer_token": config("GOOGLE_ADS_DEVELOPER_TOKEN"),
+    "client_id": config("GOOGLE_ADS_CLIENT_ID"),
+    "client_secret": config("GOOGLE_ADS_CLIENT_SECRET"),
+    "redirect_uri": config("GOOGLE_ADS_REDIRECT_URI"),
+    "login_customer_id": None,  # İstersen MCC ID ekleyebilirsin
+}
+
+
 ALLOWED_HOSTS = [
     'searchbox-project.onrender.com',
     'localhost',
@@ -248,13 +257,6 @@ WEBPUSH_SETTINGS = {
 VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY")
 VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY")
 
-GOOGLE_ADS = {
-    "developer_token": config("GOOGLE_ADS_DEVELOPER_TOKEN"),
-    "client_id": config("GOOGLE_ADS_CLIENT_ID"),
-    "client_secret": config("GOOGLE_ADS_CLIENT_SECRET"),
-    "redirect_uri": config("GOOGLE_ADS_REDIRECT_URI"),
-    "login_customer_id": None,  # İstersen MCC ID ekleyebilirsin
-}
 
 
 
