@@ -41,9 +41,9 @@ GOOGLE_ADS = {
     "client_id": config("GOOGLE_ADS_CLIENT_ID"),
     "client_secret": config("GOOGLE_ADS_CLIENT_SECRET"),
     "redirect_uri": config("GOOGLE_ADS_REDIRECT_URI"),
-    "login_customer_id": config("GOOGLE_ADS_LOGIN_CUSTOMER_ID"),
+    "customer_id": config("GOOGLE_ADS_CUSTOMER_ID"),
+    "login_customer_id": config("GOOGLE_ADS_LOGIN_CUSTOMER_ID", default=None),
 }
-
 
 
 ALLOWED_HOSTS = [
