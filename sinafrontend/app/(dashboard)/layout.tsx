@@ -17,6 +17,7 @@ import {
   X,
   LogOut,
   Palette,
+  Brain,
 } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -129,6 +130,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             href="/widgets"
             icon={<Puzzle size={20} />}
             text="Widgets"
+            open={sidebarOpen}
+          />
+           <SidebarLink
+            href="/ai"
+            icon={<Brain size={20} />}
+            text="SinAİ"
             open={sidebarOpen}
           />
 
