@@ -21,13 +21,15 @@ class Command(BaseCommand):
             return
 
         texts = [r[1] for r in rows]
-        vectors = model.encode(texts, convert_to_numpy=True).tolist()
+        vectors = model.encode(texts, convert_to_numpy=True)
 
         with connection.cursor() as cur:
             for (doc_id, _), vec in zip(rows, vectors):
+                # Listeyi PostgreSQL pgvector formatına çevir: {0.12,-0.43,...}
+                vec_str = "[" + ",".join(str(x) for x in vec.tolist()) + "]"
                 cur.execute(
                     "update ai_documents set embedding = %s::vector where id = %s",
-                    (str(vec), doc_id)
+                    (vec_str, doc_id)
                 )
 
         self.stdout.write(self.style.SUCCESS(f"{len(rows)} embedding güncellendi."))
