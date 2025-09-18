@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'account',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
+    'ai',
 
   
     
