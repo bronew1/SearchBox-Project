@@ -58,6 +58,12 @@ ALLOWED_HOSTS = [
     'sinapirlanta.com'       # <--- VE BUNU DA
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://searchprojectdemo.com",
+    "https://www.searchprojectdemo.com",
+    "https://panel.searchprojectdemo.com",
+]
+
 
 
 # Application definition
