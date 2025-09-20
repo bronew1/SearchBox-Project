@@ -1,6 +1,3 @@
-import absl.logging # type: ignore
-absl.logging.set_verbosity(absl.logging.ERROR)
-
 
 """
 WSGI config for backend project.
