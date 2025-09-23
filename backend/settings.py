@@ -17,6 +17,9 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
 # .env dosyasını yükle
 load_dotenv(BASE_DIR / ".env")
 
