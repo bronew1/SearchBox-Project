@@ -2,15 +2,13 @@ import json
 import os
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
 from aicxp.utils import semantic_search, run_sql_metrics
-from openai import OpenAI
+from groq import Groq
 
-# OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Groq client
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")  # hızlı + ucuz model seçebilirsin
-
+MODEL = "llama-3.1-8b-instant"  # hızlı + ücretsiz model
 
 @csrf_exempt
 def ask(request):
@@ -28,13 +26,13 @@ def ask(request):
         docs = semantic_search(q, k=5)
         ctx = "\n\n".join([f"{d['title']}: {d['content']}" for d in docs])
 
-        # --- 2. Metrics (sepete ekleme, satış, ROAS vs.) ---
+        # --- 2. Metrics ---
         metrics = None
         q_low = q.lower()
         if any(word in q_low for word in ["sepete", "satın", "roas", "ciro", "gelir", "tıklama"]):
             metrics = run_sql_metrics("adds", "2025-09-01", "2025-09-23", limit=7)
 
-        # --- 3. OpenAI prompt ---
+        # --- 3. Groq Prompt ---
         prompt = f"""
 Sen CXP panelinin analitik ve ürün asistanısın.
 Kullanıcı sorusunu veritabanından gelen bilgilerle cevapla.
@@ -47,8 +45,9 @@ Soru: {q}
 Metrikler:
 {metrics or "Uygulanmadı"}
 
-Cevabını kullanıcıya kısa, net ve Türkçe ver.
+Cevabını kısa, net ve Türkçe ver.
 """
+
         resp = client.chat.completions.create(
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
