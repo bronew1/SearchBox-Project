@@ -3,18 +3,18 @@
 import { useState } from "react";
 
 export default function AskPage() {
+  const [messages, setMessages] = useState<
+    { role: "user" | "assistant"; content: string }[]
+  >([]);
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState<string | null>(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const handleAsk = async () => {
     if (!question.trim()) return;
     setLoading(true);
-    setAnswer(null);
-    setProducts([]);
-    setMetrics(null);
+
+    // kullanıcı mesajını ekle
+    setMessages((prev) => [...prev, { role: "user", content: question }]);
 
     try {
       const res = await fetch(
@@ -27,71 +27,72 @@ export default function AskPage() {
       );
 
       const data = await res.json();
-      if (data.error) {
-        setAnswer("⚠️ Hata: " + data.error);
-      } else {
-        setAnswer(data.answer || "Yanıt alınamadı.");
-        setProducts(data.products || []);
-        setMetrics(data.metrics || null);
-      }
+      const answer = data.answer || "Yanıt alınamadı.";
+
+      // asistan mesajını ekle
+      setMessages((prev) => [...prev, { role: "assistant", content: answer }]);
     } catch (err: any) {
-      setAnswer("⚠️ Sunucu hatası: " + err.message);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "⚠️ Sunucu hatası: " + err.message },
+      ]);
     } finally {
+      setQuestion("");
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">AI Asistan</h1>
-
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          className="flex-1 border p-2 rounded"
-          placeholder="Bir soru sor... (ör: tektaş ürünleri listele)"
-        />
-        <button
-          onClick={handleAsk}
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {loading ? "Soruluyor..." : "Sor"}
-        </button>
+    <div className="flex flex-col h-[calc(100vh-4rem)] w-full bg-gray-50">
+      {/* Mesajlar */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`px-4 py-2 rounded-2xl max-w-xl shadow text-sm whitespace-pre-line ${
+                msg.role === "user"
+                  ? "bg-blue-600 text-white rounded-br-none"
+                  : "bg-white text-gray-800 border rounded-bl-none"
+              }`}
+            >
+              {msg.content}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="px-4 py-2 bg-white border rounded-2xl text-gray-400 text-sm">
+              Yazıyor...
+            </div>
+          </div>
+        )}
       </div>
 
-      {answer && (
-        <div className="mb-6 p-4 bg-gray-100 rounded shadow">
-          <h2 className="font-semibold">Yanıt:</h2>
-          <p>{answer}</p>
+      {/* Input */}
+      <div className="border-t bg-white p-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Bir şey sor..."
+            onKeyDown={(e) => e.key === "Enter" && handleAsk()}
+          />
+          <button
+            onClick={handleAsk}
+            disabled={loading}
+            className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
+          >
+            {loading ? "..." : "Gönder"}
+          </button>
         </div>
-      )}
-
-      {metrics && (
-        <div className="mb-6 p-4 bg-yellow-50 rounded shadow">
-          <h2 className="font-semibold">Metrikler:</h2>
-          <pre className="text-sm">{JSON.stringify(metrics, null, 2)}</pre>
-        </div>
-      )}
-
-      {products.length > 0 && (
-        <div>
-          <h2 className="font-semibold mb-2">İlgili Ürünler:</h2>
-          <ul className="grid grid-cols-2 gap-4">
-            {products.map((p) => (
-              <li
-                key={p.id}
-                className="border rounded p-3 bg-white shadow hover:shadow-lg transition"
-              >
-                <p className="font-bold">{p.title}</p>
-                <p className="text-sm text-gray-600">{p.content}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
