@@ -22,32 +22,47 @@ def ask(request):
         if not q:
             return JsonResponse({"error": "question boş"}, status=400)
 
-        # --- 1. Semantic search (ürünler için) ---
-        docs = semantic_search(q, k=5)
+        q_low = q.lower()
+        docs = []
+
+        # --- 1. Eğer kullanıcı "hepsini listele" derse -> tümünü çek ---
+        if "hepsini" in q_low or "tamamını" in q_low or "listele" in q_low:
+            with connection.cursor() as cur:
+                cur.execute("""
+                    SELECT id, title, content
+                    FROM ai_documents
+                    WHERE source_type='product'
+                    AND (title ILIKE %s OR content ILIKE %s)
+                    LIMIT 100
+                """, (f"%tektaş%", f"%tektaş%"))
+                rows = cur.fetchall()
+                docs = [{"id": r[0], "title": r[1], "content": r[2]} for r in rows]
+        else:
+            # --- 2. Normal semantic search ---
+            docs = semantic_search(q, k=5)
+
         ctx = "\n\n".join([f"{d['title']}: {d['content']}" for d in docs])
 
-        # --- 2. Metrics ---
+        # --- 3. Metrics (örnek: sepete ekleme, satış vs.) ---
         metrics = None
-        q_low = q.lower()
         if any(word in q_low for word in ["sepete", "satın", "roas", "ciro", "gelir", "tıklama"]):
             metrics = run_sql_metrics("adds", "2025-09-01", "2025-09-23", limit=7)
 
-        # --- 3. Groq Prompt ---
+        # --- 4. OpenAI/Groq prompt ---
         prompt = f"""
-Sen CXP panelinin analitik ve ürün asistanısın.
-Kullanıcı sorusunu veritabanından gelen bilgilerle cevapla.
+Sen Sina Pırlanta'nın CXP AI Asistanısın.
+Kullanıcı sorusunu veritabanındaki ürünler ve metrikler ile cevapla.
 
 Soru: {q}
 
-Ürünler (semantic search sonucu):
+Ürünler:
 {ctx or "Ürün bulunamadı."}
 
 Metrikler:
-{metrics or "Uygulanmadı"}
+{metrics or "Yok"}
 
-Cevabını kısa, net ve Türkçe ver.
+Cevabını kullanıcıya kısa, net ve Türkçe ver.
 """
-
         resp = client.chat.completions.create(
             model=MODEL,
             messages=[{"role": "user", "content": prompt}],
