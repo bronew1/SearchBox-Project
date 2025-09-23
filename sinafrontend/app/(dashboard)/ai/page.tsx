@@ -6,6 +6,7 @@ export default function AskPage() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
   const [products, setProducts] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const handleAsk = async () => {
@@ -13,6 +14,7 @@ export default function AskPage() {
     setLoading(true);
     setAnswer(null);
     setProducts([]);
+    setMetrics(null);
 
     try {
       const res = await fetch(
@@ -28,8 +30,9 @@ export default function AskPage() {
       if (data.error) {
         setAnswer("⚠️ Hata: " + data.error);
       } else {
-        setAnswer(data.answer);
+        setAnswer(data.answer || "Yanıt alınamadı.");
         setProducts(data.products || []);
+        setMetrics(data.metrics || null);
       }
     } catch (err: any) {
       setAnswer("⚠️ Sunucu hatası: " + err.message);
@@ -63,6 +66,13 @@ export default function AskPage() {
         <div className="mb-6 p-4 bg-gray-100 rounded shadow">
           <h2 className="font-semibold">Yanıt:</h2>
           <p>{answer}</p>
+        </div>
+      )}
+
+      {metrics && (
+        <div className="mb-6 p-4 bg-yellow-50 rounded shadow">
+          <h2 className="font-semibold">Metrikler:</h2>
+          <pre className="text-sm">{JSON.stringify(metrics, null, 2)}</pre>
         </div>
       )}
 
