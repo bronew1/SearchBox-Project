@@ -1,30 +1,31 @@
 from django.core.management.base import BaseCommand
 from django.db import connection
-from products.models import Product  # kendi Product modeline göre kontrol et
-from aicxp.utils import get_embedding
+from sentence_transformers import SentenceTransformer
+from products.models import Product  # ürün modelini kendi app adına göre düzelt
 
 class Command(BaseCommand):
-    help = "Ürünleri ai_documents tablosuna sync eder (embedding ile)"
+    help = "Product verilerini ai_documents tablosuna senkronize eder"
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
+        model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
         products = Product.objects.all()
-        count = 0
+        self.stdout.write(self.style.NOTICE(f"{products.count()} ürün işleniyor..."))
 
         with connection.cursor() as cursor:
             for p in products:
-                content = f"{p.name}\n\n{p.description or ''}"
-                emb = get_embedding(content).tolist()
+                content = f"{p.name} - {p.description or ''}"
+                emb = model.encode([content], convert_to_numpy=True).tolist()[0]
 
                 cursor.execute("""
                     INSERT INTO ai_documents (source_type, source_id, title, content, embedding, created_at, updated_at)
-                    VALUES (%s, %s, %s, %s, %s::vector, NOW(), NOW())
-                    ON CONFLICT (source_id) DO UPDATE
-                      SET title = EXCLUDED.title,
-                          content = EXCLUDED.content,
-                          embedding = EXCLUDED.embedding,
-                          updated_at = NOW();
+                    VALUES (%s, %s, %s, %s, %s, NOW(), NOW())
+                    ON CONFLICT (source_id)
+                    DO UPDATE SET 
+                        title = EXCLUDED.title,
+                        content = EXCLUDED.content,
+                        embedding = EXCLUDED.embedding,
+                        updated_at = NOW();
                 """, ["product", str(p.id), p.name, content, emb])
 
-                count += 1
-
-        self.stdout.write(self.style.SUCCESS(f"{count} ürün sync edildi"))
+        self.stdout.write(self.style.SUCCESS("Ürünler başarıyla senkronize edildi."))
