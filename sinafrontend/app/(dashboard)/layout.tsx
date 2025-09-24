@@ -133,7 +133,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             open={sidebarOpen}
           />
            <SidebarLink
-            href="/ai"
+            href="/SinAI"
             icon={<Brain size={20} />}
             text="SinAİ"
             open={sidebarOpen}
