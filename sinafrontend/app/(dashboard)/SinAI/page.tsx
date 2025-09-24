@@ -31,7 +31,7 @@ export default function AskPage() {
       );
 
       const data = await res.json();
-      const answer = data.answer || "Yanıt alınamadı.";
+      const answer = data.answer || "Yanıt alınamadııı.";
 
       const newAssistantMessage: Message = { role: "assistant", content: answer };
       setMessages((prev) => [...prev, newAssistantMessage]);
