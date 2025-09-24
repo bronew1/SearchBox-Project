@@ -10,7 +10,6 @@ def semantic_search(query: str, k: int = 5):
     Kullanıcıdan gelen arama sorgusunu encode edip
     pgvector üzerinden en yakın ürünleri döndürür.
     """
-    # Sorguyu vektöre çevir
     qvec = _model.encode([query], convert_to_numpy=True).tolist()[0]
 
     with connection.cursor() as cur:
@@ -67,5 +66,51 @@ def run_sql_metrics(metric: str, start_date: str, end_date: str, limit: int = 10
 
     return [
         {"day": str(r[0]), "value": float(r[1]) if r[1] is not None else None}
+        for r in rows
+    ]
+
+
+def top_cart_product():
+    """
+    En çok sepete eklenen ürünü döndürür.
+    """
+    sql = """
+        SELECT product_id, COUNT(*) as cnt
+        FROM tracking_userevent
+        WHERE event_name = 'add_to_cart'
+        GROUP BY product_id
+        ORDER BY cnt DESC
+        LIMIT 1;
+    """
+
+    with connection.cursor() as cur:
+        cur.execute(sql)
+        row = cur.fetchone()
+
+    if row:
+        return {"product_id": row[0], "adds": row[1]}
+    return None
+
+
+def top_products(event_name: str = "add_to_cart", limit: int = 5):
+    """
+    Belirli bir evente göre (ör: add_to_cart, view_item, purchase)
+    en çok yapılan ürünleri getirir.
+    """
+    sql = """
+        SELECT product_id, COUNT(*) AS cnt
+        FROM tracking_userevent
+        WHERE event_name = %s
+        GROUP BY product_id
+        ORDER BY cnt DESC
+        LIMIT %s
+    """
+
+    with connection.cursor() as cur:
+        cur.execute(sql, [event_name, limit])
+        rows = cur.fetchall()
+
+    return [
+        {"product_id": r[0], "count": r[1]}
         for r in rows
     ]
