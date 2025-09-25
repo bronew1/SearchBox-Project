@@ -181,10 +181,31 @@ export default function UserEventsTable() {
                     <span className="font-medium text-gray-900">{r.id}</span>
                   </Td>
 
+                  {/* ✅ Event badge renkleri */}
                   <Td>
-                    <span className="inline-flex items-center rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-medium text-rose-700">
-                      {r.event}
-                    </span>
+                    {(() => {
+                      let bg = "bg-gray-100";
+                      let text = "text-gray-700";
+
+                      if (r.event === "purchase") {
+                        bg = "bg-green-50";
+                        text = "text-green-700";
+                      } else if (r.event === "add_to_cart") {
+                        bg = "bg-orange-50";
+                        text = "text-orange-700";
+                      } else if (r.event === "view_item") {
+                        bg = "bg-rose-50";
+                        text = "text-rose-700";
+                      }
+
+                      return (
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${bg} ${text}`}
+                        >
+                          {r.event}
+                        </span>
+                      );
+                    })()}
                   </Td>
 
                   <Td className="max-w-[160px] truncate" title={r.productId}>
